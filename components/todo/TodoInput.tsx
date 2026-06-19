@@ -6,6 +6,7 @@ import { parseNaturalLanguageDate, extractTodoTitle } from '../../utils/nlp';
 import { todoService } from '../../services/db';
 import { notificationService } from '../../services/notifications';
 import { useStore } from '../../store/useStore';
+import type { Priority, Category } from '../../types/todo';
 
 
 
@@ -27,8 +28,8 @@ export const TodoInput: React.FC<TodoInputProps> = ({ onTodoAdded }) => {
       title,
       description: '',
       dueDate: date.toISOString(),
-      priority: 'medium',
-      category: 'Other',
+      priority: 'medium' as Priority,
+      category: 'Other' as Category,
       isCompleted: false,
       createdAt: new Date().toISOString(),
       reminderScheduled: false,

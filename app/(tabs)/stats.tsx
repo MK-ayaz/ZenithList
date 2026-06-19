@@ -50,7 +50,7 @@ export default function StatsScreen() {
         {Object.entries(stats.priorityDistribution).map(([priority, count]) => (
           <View key={priority} className="flex-row justify-between items-center">
             <Typography variant="body">{priority}</Typography>
-            <Typography variant="body" className="font-bold">{count}</Typography>
+            <Typography variant="body" className="font-bold">{String(count)}</Typography>
           </View>
         ))}
       </Card>
