@@ -1,11 +1,8 @@
 import { Tabs } from "expo-router";
-import { useColorScheme, Text, Pressable } from "react-native";
+import { useColorScheme, Pressable } from "react-native";
 import { useRouter } from "expo-router";
+import { MaterialIcons } from "@expo/vector-icons";
 import { useTaskStore } from "../../src/stores/taskStore";
-
-function TabIcon({ icon, color }: { icon: string; color: string }) {
-  return <Text style={{ fontSize: 20, color: String(color) }}>{icon}</Text>;
-}
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
@@ -24,7 +21,7 @@ export default function TabLayout() {
       onPress={() => router.push("/stats")}
       style={{ marginRight: 16 }}
     >
-      <Text style={{ fontSize: 20 }}>📊</Text>
+      <MaterialIcons name="bar-chart" size={24} color={isDark ? "#fff" : "#000"} />
     </Pressable>
   );
 
@@ -48,7 +45,9 @@ export default function TabLayout() {
         name="today"
         options={{
           title: "Today",
-          tabBarIcon: ({ color }) => <TabIcon icon="📅" color={String(color)} />,
+          tabBarIcon: ({ color, size }) => (
+            <MaterialIcons name="today" size={size} color={color} />
+          ),
           tabBarBadge: todayCount > 0 ? todayCount : undefined,
         }}
       />
@@ -56,7 +55,9 @@ export default function TabLayout() {
         name="upcoming"
         options={{
           title: "Upcoming",
-          tabBarIcon: ({ color }) => <TabIcon icon="📆" color={String(color)} />,
+          tabBarIcon: ({ color, size }) => (
+            <MaterialIcons name="date-range" size={size} color={color} />
+          ),
           tabBarBadge: upcomingCount > 0 ? upcomingCount : undefined,
         }}
       />
@@ -64,7 +65,9 @@ export default function TabLayout() {
         name="inbox"
         options={{
           title: "Inbox",
-          tabBarIcon: ({ color }) => <TabIcon icon="📥" color={String(color)} />,
+          tabBarIcon: ({ color, size }) => (
+            <MaterialIcons name="inbox" size={size} color={color} />
+          ),
           tabBarBadge: inboxCount > 0 ? inboxCount : undefined,
         }}
       />
@@ -72,7 +75,9 @@ export default function TabLayout() {
         name="completed"
         options={{
           title: "Done",
-          tabBarIcon: ({ color }) => <TabIcon icon="✅" color={String(color)} />,
+          tabBarIcon: ({ color, size }) => (
+            <MaterialIcons name="check-circle-outline" size={size} color={color} />
+          ),
         }}
       />
     </Tabs>

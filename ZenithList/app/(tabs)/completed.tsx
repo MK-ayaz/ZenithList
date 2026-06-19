@@ -25,7 +25,7 @@ export default function CompletedScreen() {
 
       <TaskList
         tasks={tasks}
-        emptyIcon="🎉"
+        emptyIconName="check-circle"
         emptyTitle="No completed tasks"
         emptyDescription="Tasks you complete will show up here"
         onPressTask={(id) => router.push(`/task/${id}`)}

@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Category, CreateCategoryInput, UpdateCategoryInput } from "../types";
+import { generateId } from "../utils/id";
 
 interface CategoryState {
   categories: Category[];
@@ -18,7 +19,7 @@ export const useCategoryStore = create<CategoryState>()(
       addCategory: (input) => {
         const category: Category = {
           ...input,
-          id: crypto.randomUUID(),
+          id: generateId(),
         };
         set((state) => ({ categories: [...state.categories, category] }));
         return category;

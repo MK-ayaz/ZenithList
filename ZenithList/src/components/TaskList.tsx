@@ -1,12 +1,13 @@
 import React from "react";
 import { FlatList } from "react-native";
+import { MaterialIcons } from "@expo/vector-icons";
 import { TaskCard } from "./TaskCard";
 import { EmptyState } from "./EmptyState";
 import { Task } from "../types";
 
 interface TaskListProps {
   tasks: Task[];
-  emptyIcon?: string;
+  emptyIconName?: keyof typeof MaterialIcons.glyphMap;
   emptyTitle?: string;
   emptyDescription?: string;
   onPressTask: (id: string) => void;
@@ -15,7 +16,7 @@ interface TaskListProps {
 
 export function TaskList({
   tasks,
-  emptyIcon = "📋",
+  emptyIconName = "checklist",
   emptyTitle = "No tasks",
   emptyDescription = "Create a new task to get started",
   onPressTask,
@@ -24,7 +25,7 @@ export function TaskList({
   if (tasks.length === 0) {
     return (
       <EmptyState
-        icon={emptyIcon}
+        iconName={emptyIconName}
         title={emptyTitle}
         description={emptyDescription}
       />

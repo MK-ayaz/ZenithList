@@ -1,15 +1,16 @@
 import React from "react";
-import { Pressable, Text, StyleSheet } from "react-native";
+import { Pressable, StyleSheet } from "react-native";
+import { MaterialIcons } from "@expo/vector-icons";
 import Animated, { useSharedValue, useAnimatedStyle, withSpring } from "react-native-reanimated";
 
 interface FABProps {
-  icon: string;
+  iconName: keyof typeof MaterialIcons.glyphMap;
   onPress: () => void;
 }
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
-export function FAB({ icon, onPress }: FABProps) {
+export function FAB({ iconName, onPress }: FABProps) {
   const scale = useSharedValue(1);
 
   const animatedStyle = useAnimatedStyle(() => ({
@@ -23,7 +24,7 @@ export function FAB({ icon, onPress }: FABProps) {
       onPressIn={() => { scale.value = withSpring(0.9); }}
       onPressOut={() => { scale.value = withSpring(1); }}
     >
-      <Text style={styles.icon}>{icon}</Text>
+      <MaterialIcons name={iconName} size={28} color="#ffffff" />
     </AnimatedPressable>
   );
 }
@@ -45,5 +46,4 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
   },
-  icon: { color: "#ffffff", fontSize: 24 },
 });

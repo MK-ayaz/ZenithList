@@ -26,14 +26,14 @@ export default function UpcomingScreen() {
 
       <TaskList
         tasks={tasks}
-        emptyIcon="📆"
+        emptyIconName="date-range"
         emptyTitle="Nothing upcoming"
         emptyDescription="Tasks due in the next 7 days will appear here"
         onPressTask={(id) => router.push(`/task/${id}`)}
         onToggleComplete={(id) => completeTask(id)}
       />
 
-      <FAB icon="+" onPress={() => router.push("/task/new")} />
+      <FAB iconName="add" onPress={() => router.push("/task/new")} />
     </View>
   );
 }

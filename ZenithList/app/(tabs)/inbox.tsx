@@ -26,14 +26,14 @@ export default function InboxScreen() {
 
       <TaskList
         tasks={tasks}
-        emptyIcon="📥"
+        emptyIconName="inbox"
         emptyTitle="Inbox is empty"
         emptyDescription="Tasks without a due date go here"
         onPressTask={(id) => router.push(`/task/${id}`)}
         onToggleComplete={(id) => completeTask(id)}
       />
 
-      <FAB icon="+" onPress={() => router.push("/task/new")} />
+      <FAB iconName="add" onPress={() => router.push("/task/new")} />
     </View>
   );
 }

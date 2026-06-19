@@ -26,14 +26,14 @@ export default function TodayScreen() {
 
       <TaskList
         tasks={tasks}
-        emptyIcon="☀️"
+        emptyIconName="wb-sunny"
         emptyTitle="All clear today"
-        emptyDescription="No tasks due today. Enjoy your day!"
+        emptyDescription="No tasks due today"
         onPressTask={(id) => router.push(`/task/${id}`)}
         onToggleComplete={(id) => completeTask(id)}
       />
 
-      <FAB icon="+" onPress={() => router.push("/task/new")} />
+      <FAB iconName="add" onPress={() => router.push("/task/new")} />
     </View>
   );
 }

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { View, Text, FlatList, Pressable, Alert, TextInput, StyleSheet } from "react-native";
+import { MaterialIcons } from "@expo/vector-icons";
 import { useCategoryStore } from "../src/stores/categoryStore";
 import { useTaskStore } from "../src/stores/taskStore";
 import { EmptyState } from "../src/components/EmptyState";
@@ -19,7 +20,7 @@ export default function CategoriesScreen() {
 
   const handleAdd = () => {
     if (!newName.trim()) { Alert.alert("Error", "Please enter a category name"); return; }
-    addCategory({ name: newName.trim(), color: selectedColor, icon: "📁" });
+    addCategory({ name: newName.trim(), color: selectedColor, icon: "folder" });
     setNewName("");
     setIsAdding(false);
   };
@@ -35,7 +36,7 @@ export default function CategoriesScreen() {
   if (categories.length === 0 && !isAdding) {
     return (
       <View style={styles.container}>
-        <EmptyState icon="📂" title="No categories" description="Create categories to organize your tasks" />
+        <EmptyState iconName="create-new-folder" title="No categories" description="Create categories to organize your tasks" />
         <View style={{ padding: 16 }}>
           <Button title="Add Category" onPress={() => setIsAdding(true)} />
         </View>
@@ -72,13 +73,13 @@ export default function CategoriesScreen() {
           const taskCount = tasks.filter((t) => t.categoryId === item.id).length;
           return (
             <View style={styles.categoryItem}>
-              <View style={[styles.catColorDot, { backgroundColor: item.color }]} />
+              <MaterialIcons name="folder" size={24} color={item.color} />
               <View style={styles.catInfo}>
                 <Text style={styles.catName}>{item.name}</Text>
                 <Text style={styles.catCount}>{taskCount} {taskCount === 1 ? "task" : "tasks"}</Text>
               </View>
               <Pressable onPress={() => handleDelete(item.id, item.name)}>
-                <Text style={styles.deleteBtn}>Delete</Text>
+                <MaterialIcons name="delete-outline" size={22} color="#ef4444" />
               </Pressable>
             </View>
           );
@@ -98,9 +99,7 @@ const styles = StyleSheet.create({
   colorDotSelected: { borderWidth: 3, borderColor: "#2563eb" },
   formActions: { flexDirection: "row" },
   categoryItem: { flexDirection: "row", alignItems: "center", backgroundColor: "#ffffff", borderRadius: 12, padding: 16, marginBottom: 12, borderWidth: 1, borderColor: "#f3f4f6" },
-  catColorDot: { width: 16, height: 16, borderRadius: 8, marginRight: 12 },
-  catInfo: { flex: 1 },
+  catInfo: { flex: 1, marginLeft: 12 },
   catName: { fontSize: 16, fontWeight: "600", color: "#111827" },
   catCount: { fontSize: 14, color: "#6b7280" },
-  deleteBtn: { color: "#ef4444", fontSize: 14 },
 });
