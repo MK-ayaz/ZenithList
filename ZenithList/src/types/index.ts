@@ -18,22 +18,17 @@ export interface Task {
   updatedAt: string;
 }
 
-export type CreateTaskInput = Omit<
-  Task,
-  "id" | "createdAt" | "updatedAt" | "completedAt"
->;
-
+export type CreateTaskInput = Omit<Task, "id" | "createdAt" | "updatedAt" | "completedAt">;
 export type UpdateTaskInput = Partial<Omit<Task, "id" | "createdAt">>;
 
 export interface Category {
   id: string;
   name: string;
   color: string;
-  icon: string;
+  icon?: string;
 }
 
 export type CreateCategoryInput = Omit<Category, "id">;
-
 export type UpdateCategoryInput = Partial<Omit<Category, "id">>;
 
 export interface UserSettings {
@@ -45,3 +40,5 @@ export interface UserSettings {
   sortBy: "dueDate" | "priority" | "createdAt";
   sortOrder: "asc" | "desc";
 }
+
+export type IoniconsName = React.ComponentProps<typeof import("@expo/vector-icons").Ionicons>["name"];

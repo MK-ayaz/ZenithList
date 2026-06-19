@@ -1,10 +1,11 @@
 import React from "react";
 import { Pressable, StyleSheet } from "react-native";
-import { MaterialIcons } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 import Animated, { useSharedValue, useAnimatedStyle, withSpring } from "react-native-reanimated";
+import * as Haptics from "expo-haptics";
 
 interface FABProps {
-  iconName: keyof typeof MaterialIcons.glyphMap;
+  iconName: keyof typeof Ionicons.glyphMap;
   onPress: () => void;
 }
 
@@ -12,19 +13,16 @@ const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 export function FAB({ iconName, onPress }: FABProps) {
   const scale = useSharedValue(1);
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-  }));
+  const animStyle = useAnimatedStyle(() => ({ transform: [{ scale: scale.value }] }));
 
   return (
     <AnimatedPressable
-      style={[styles.container, animatedStyle]}
-      onPress={onPress}
-      onPressIn={() => { scale.value = withSpring(0.9); }}
+      style={[styles.container, animStyle]}
+      onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); onPress(); }}
+      onPressIn={() => { scale.value = withSpring(0.88); }}
       onPressOut={() => { scale.value = withSpring(1); }}
     >
-      <MaterialIcons name={iconName} size={28} color="#ffffff" />
+      <Ionicons name={iconName} size={26} color="#ffffff" />
     </AnimatedPressable>
   );
 }
@@ -32,18 +30,18 @@ export function FAB({ iconName, onPress }: FABProps) {
 const styles = StyleSheet.create({
   container: {
     position: "absolute",
-    bottom: 24,
-    right: 24,
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: "#2563eb",
+    bottom: 28,
+    right: 20,
+    width: 58,
+    height: 58,
+    borderRadius: 29,
+    backgroundColor: "#6366f1",
     alignItems: "center",
     justifyContent: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
+    shadowColor: "#6366f1",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.35,
+    shadowRadius: 12,
+    elevation: 8,
   },
 });

@@ -1,14 +1,7 @@
 import { useState } from "react";
-import {
-  View,
-  Text,
-  ScrollView,
-  Pressable,
-  Platform,
-  Alert,
-  KeyboardAvoidingView,
-  StyleSheet,
-} from "react-native";
+import { View, Text, ScrollView, Pressable, Platform, Alert, KeyboardAvoidingView, StyleSheet } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
 import { useTaskStore } from "../../src/stores/taskStore";
 import { useCategoryStore } from "../../src/stores/categoryStore";
@@ -17,13 +10,18 @@ import { Input } from "../../src/components/Input";
 import { Button } from "../../src/components/Button";
 import { Priority } from "../../src/types";
 
-const PRIORITIES: Priority[] = ["high", "medium", "low", "none"];
-const RECURRENCE_OPTIONS = [
-  { label: "None", value: null },
-  { label: "Daily", value: "daily" },
-  { label: "Weekly", value: "weekly" },
-  { label: "Monthly", value: "monthly" },
-  { label: "Yearly", value: "yearly" },
+const PRIORITIES: { label: string; value: Priority; color: string }[] = [
+  { label: "High", value: "high", color: "#ef4444" },
+  { label: "Medium", value: "medium", color: "#f59e0b" },
+  { label: "Low", value: "low", color: "#3b82f6" },
+  { label: "None", value: "none", color: "#94a3b8" },
+];
+const RECURRENCE = [
+  { label: "None", value: null, icon: "close-circle" as const },
+  { label: "Daily", value: "daily", icon: "repeat" as const },
+  { label: "Weekly", value: "weekly", icon: "repeat" as const },
+  { label: "Monthly", value: "monthly", icon: "repeat" as const },
+  { label: "Yearly", value: "yearly", icon: "repeat" as const },
 ];
 
 export default function NewTaskScreen() {
@@ -40,99 +38,57 @@ export default function NewTaskScreen() {
   const [recurrenceType, setRecurrenceType] = useState<string | null>(null);
 
   const handleSave = () => {
-    if (!title.trim()) {
-      Alert.alert("Error", "Please enter a task title");
-      return;
-    }
-    addTask({
-      title: title.trim(),
-      description: description.trim(),
-      dueDate: null,
-      priority,
-      categoryId,
-      isRecurring,
-      recurrenceType: recurrenceType as any,
-    });
+    if (!title.trim()) { Alert.alert("Error", "Please enter a task title"); return; }
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    addTask({ title: title.trim(), description: description.trim(), dueDate: null, priority, categoryId, isRecurring, recurrenceType: recurrenceType as any });
     router.back();
   };
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      style={{ flex: 1 }}
-    >
-      <ScrollView style={styles.container}>
-        <View style={styles.content}>
-          <Input
-            label="Task Title"
-            value={title}
-            onChangeText={setTitle}
-            placeholder="What needs to be done?"
-          />
+    <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
+      <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+        <Input label="Title" value={title} onChangeText={setTitle} placeholder="What needs to be done?" iconName="create-outline" />
+        <Input label="Description" value={description} onChangeText={setDescription} placeholder="Add details..." multiline iconName="document-text-outline" />
 
-          <Input
-            label="Description (optional)"
-            value={description}
-            onChangeText={setDescription}
-            placeholder="Add some details..."
-            multiline
-            numberOfLines={3}
-          />
+        <Text style={styles.sectionLabel}>Priority</Text>
+        <View style={styles.chipRow}>
+          {PRIORITIES.map((p) => (
+            <Pressable key={p.value} onPress={() => { Haptics.selectionAsync(); setPriority(p.value); }}
+              style={[styles.chip, priority === p.value && { backgroundColor: p.color, borderColor: p.color }]}>
+              <Ionicons name={priority === p.value ? "checkmark" : "flag-outline"} size={14} color={priority === p.value ? "#fff" : p.color} />
+              <Text style={[styles.chipText, priority === p.value && { color: "#fff" }]}>{p.label}</Text>
+            </Pressable>
+          ))}
+        </View>
 
-          <Text style={styles.sectionLabel}>Priority</Text>
-          <View style={styles.optionRow}>
-            {PRIORITIES.map((p) => (
-              <Pressable
-                key={p}
-                onPress={() => setPriority(p)}
-                style={[styles.optionBtn, priority === p && styles.optionBtnActive]}
-              >
-                <Text style={[styles.optionText, priority === p && styles.optionTextActive]}>
-                  {p}
-                </Text>
-              </Pressable>
-            ))}
-          </View>
+        {categories.length > 0 && (
+          <>
+            <Text style={styles.sectionLabel}>Category</Text>
+            <View style={styles.chipRow}>
+              {categories.map((cat) => (
+                <Pressable key={cat.id} onPress={() => { Haptics.selectionAsync(); setCategoryId(categoryId === cat.id ? null : cat.id); }}
+                  style={[styles.chip, categoryId === cat.id && { backgroundColor: cat.color, borderColor: cat.color }]}>
+                  <View style={[styles.catDot, { backgroundColor: categoryId === cat.id ? "#fff" : cat.color }]} />
+                  <Text style={[styles.chipText, categoryId === cat.id && { color: "#fff" }]}>{cat.name}</Text>
+                </Pressable>
+              ))}
+            </View>
+          </>
+        )}
 
-          {categories.length > 0 && (
-            <>
-              <Text style={styles.sectionLabel}>Category</Text>
-              <View style={styles.optionWrap}>
-                {categories.map((cat) => (
-                  <Pressable
-                    key={cat.id}
-                    onPress={() => setCategoryId(categoryId === cat.id ? null : cat.id)}
-                    style={[styles.categoryBtn, categoryId === cat.id && styles.categoryBtnActive]}
-                  >
-                    <View style={[styles.catDot, { backgroundColor: cat.color }]} />
-                    <Text style={[styles.optionText, categoryId === cat.id && styles.optionTextActive]}>
-                      {cat.name}
-                    </Text>
-                  </Pressable>
-                ))}
-              </View>
-            </>
-          )}
+        <Text style={styles.sectionLabel}>Recurrence</Text>
+        <View style={styles.chipRow}>
+          {RECURRENCE.map((opt) => (
+            <Pressable key={opt.label} onPress={() => { Haptics.selectionAsync(); setRecurrenceType(opt.value); setIsRecurring(!!opt.value); }}
+              style={[styles.chip, recurrenceType === opt.value && styles.chipActive]}>
+              <Ionicons name={opt.icon} size={14} color={recurrenceType === opt.value ? "#fff" : "#64748b"} />
+              <Text style={[styles.chipText, recurrenceType === opt.value && { color: "#fff" }]}>{opt.label}</Text>
+            </Pressable>
+          ))}
+        </View>
 
-          <Text style={styles.sectionLabel}>Recurrence</Text>
-          <View style={styles.optionWrap}>
-            {RECURRENCE_OPTIONS.map((opt) => (
-              <Pressable
-                key={opt.label}
-                onPress={() => {
-                  setRecurrenceType(opt.value);
-                  setIsRecurring(!!opt.value);
-                }}
-                style={[styles.optionBtn, recurrenceType === opt.value && styles.optionBtnActive]}
-              >
-                <Text style={[styles.optionText, recurrenceType === opt.value && styles.optionTextActive]}>
-                  {opt.label}
-                </Text>
-              </Pressable>
-            ))}
-          </View>
-
-          <Button title="Create Task" onPress={handleSave} />
+        <View style={{ marginTop: 24 }}>
+          <Button title="Create Task" iconName="checkmark-circle" onPress={handleSave} />
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -140,32 +96,12 @@ export default function NewTaskScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#ffffff" },
-  content: { padding: 16 },
-  sectionLabel: { fontSize: 14, fontWeight: "500", color: "#374151", marginBottom: 8 },
-  optionRow: { flexDirection: "row", marginBottom: 24 },
-  optionWrap: { flexDirection: "row", flexWrap: "wrap", marginBottom: 24 },
-  optionBtn: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 8,
-    marginRight: 8,
-    marginBottom: 8,
-    backgroundColor: "#f3f4f6",
-  },
-  optionBtnActive: { backgroundColor: "#2563eb" },
-  optionText: { fontWeight: "500", color: "#6b7280" },
-  optionTextActive: { color: "#ffffff" },
-  categoryBtn: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 8,
-    marginRight: 8,
-    marginBottom: 8,
-    backgroundColor: "#f3f4f6",
-  },
-  categoryBtnActive: { backgroundColor: "#2563eb" },
-  catDot: { width: 8, height: 8, borderRadius: 4, marginRight: 8 },
+  container: { flex: 1, backgroundColor: "#f8fafc" },
+  content: { padding: 20 },
+  sectionLabel: { fontSize: 13, fontWeight: "700", color: "#475569", marginBottom: 10, marginTop: 8, letterSpacing: 0.3, textTransform: "uppercase" },
+  chipRow: { flexDirection: "row", flexWrap: "wrap", marginBottom: 16, gap: 8 },
+  chip: { flexDirection: "row", alignItems: "center", paddingHorizontal: 14, paddingVertical: 8, borderRadius: 20, borderWidth: 1.5, borderColor: "#e2e8f0", backgroundColor: "#ffffff", gap: 6 },
+  chipActive: { backgroundColor: "#6366f1", borderColor: "#6366f1" },
+  chipText: { fontSize: 13, fontWeight: "600", color: "#475569" },
+  catDot: { width: 8, height: 8, borderRadius: 4 },
 });
