@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { View, TextInput } from "react-native";
+import { View, TextInput, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
 import { useFilteredTasks } from "../../src/hooks/useFilteredTasks";
 import { useTaskStore } from "../../src/stores/taskStore";
@@ -13,13 +13,13 @@ export default function UpcomingScreen() {
   const tasks = useFilteredTasks("upcoming", searchQuery);
 
   return (
-    <View className="flex-1 bg-white dark:bg-gray-950">
-      <View className="px-4 pt-2 pb-3">
+    <View style={styles.container}>
+      <View style={styles.searchContainer}>
         <TextInput
           value={searchQuery}
           onChangeText={setSearchQuery}
           placeholder="Search upcoming tasks..."
-          className="bg-gray-100 dark:bg-gray-800 rounded-xl px-4 py-3 text-gray-900 dark:text-white"
+          style={styles.searchInput}
           placeholderTextColor="#9ca3af"
         />
       </View>
@@ -37,3 +37,16 @@ export default function UpcomingScreen() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: "#ffffff" },
+  searchContainer: { paddingHorizontal: 16, paddingTop: 8, paddingBottom: 12 },
+  searchInput: {
+    backgroundColor: "#f3f4f6",
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    fontSize: 16,
+    color: "#111827",
+  },
+});

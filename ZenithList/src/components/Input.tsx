@@ -1,6 +1,5 @@
 import React from "react";
-import { TextInput, View, Text } from "react-native";
-import { cn } from "../utils/cn";
+import { TextInput, View, Text, StyleSheet } from "react-native";
 
 interface InputProps {
   value: string;
@@ -10,7 +9,6 @@ interface InputProps {
   error?: string;
   multiline?: boolean;
   numberOfLines?: number;
-  className?: string;
 }
 
 export function Input({
@@ -21,31 +19,36 @@ export function Input({
   error,
   multiline = false,
   numberOfLines = 1,
-  className,
 }: InputProps) {
   return (
-    <View className={cn("mb-4", className)}>
-      {label && (
-        <Text className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-          {label}
-        </Text>
-      )}
+    <View style={styles.container}>
+      {label && <Text style={styles.label}>{label}</Text>}
       <TextInput
         value={value}
         onChangeText={onChangeText}
         placeholder={placeholder}
         multiline={multiline}
         numberOfLines={numberOfLines}
-        className={cn(
-          "bg-gray-100 dark:bg-gray-800 rounded-xl px-4 py-3 text-gray-900 dark:text-white",
-          multiline && "min-h-[80px]",
-          error && "border border-red-500"
-        )}
+        style={[styles.input, multiline && styles.multiline, error && styles.inputError]}
         placeholderTextColor="#9ca3af"
       />
-      {error && (
-        <Text className="text-red-500 text-xs mt-1">{error}</Text>
-      )}
+      {error && <Text style={styles.error}>{error}</Text>}
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: { marginBottom: 16 },
+  label: { fontSize: 14, fontWeight: "500", color: "#374151", marginBottom: 6 },
+  input: {
+    backgroundColor: "#f3f4f6",
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    fontSize: 16,
+    color: "#111827",
+  },
+  multiline: { minHeight: 80 },
+  inputError: { borderWidth: 1, borderColor: "#ef4444" },
+  error: { color: "#ef4444", fontSize: 12, marginTop: 4 },
+});

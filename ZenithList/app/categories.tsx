@@ -1,28 +1,11 @@
 import { useState } from "react";
-import {
-  View,
-  Text,
-  FlatList,
-  Pressable,
-  Alert,
-  TextInput,
-} from "react-native";
+import { View, Text, FlatList, Pressable, Alert, TextInput, StyleSheet } from "react-native";
 import { useCategoryStore } from "../src/stores/categoryStore";
 import { useTaskStore } from "../src/stores/taskStore";
 import { EmptyState } from "../src/components/EmptyState";
 import { Button } from "../src/components/Button";
-import { cn } from "../src/utils/cn";
 
-const COLORS = [
-  "#ef4444",
-  "#f59e0b",
-  "#22c55e",
-  "#3b82f6",
-  "#8b5cf6",
-  "#ec4899",
-  "#06b6d4",
-  "#84cc16",
-];
+const COLORS = ["#ef4444", "#f59e0b", "#22c55e", "#3b82f6", "#8b5cf6", "#ec4899", "#06b6d4", "#84cc16"];
 
 export default function CategoriesScreen() {
   const categories = useCategoryStore((s) => s.categories);
@@ -35,46 +18,25 @@ export default function CategoriesScreen() {
   const [selectedColor, setSelectedColor] = useState(COLORS[0]);
 
   const handleAdd = () => {
-    if (!newName.trim()) {
-      Alert.alert("Error", "Please enter a category name");
-      return;
-    }
-    addCategory({
-      name: newName.trim(),
-      color: selectedColor,
-      icon: "📁",
-    });
+    if (!newName.trim()) { Alert.alert("Error", "Please enter a category name"); return; }
+    addCategory({ name: newName.trim(), color: selectedColor, icon: "📁" });
     setNewName("");
     setIsAdding(false);
   };
 
   const handleDelete = (id: string, name: string) => {
     const taskCount = tasks.filter((t) => t.categoryId === id).length;
-    Alert.alert(
-      "Delete Category",
-      taskCount > 0
-        ? `"${name}" has ${taskCount} tasks. They will be moved to Inbox. Delete anyway?`
-        : `Delete "${name}"?`,
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Delete",
-          style: "destructive",
-          onPress: () => deleteCategory(id),
-        },
-      ]
-    );
+    Alert.alert("Delete Category", taskCount > 0 ? `"${name}" has ${taskCount} tasks. They will be moved to Inbox. Delete anyway?` : `Delete "${name}"?`, [
+      { text: "Cancel", style: "cancel" },
+      { text: "Delete", style: "destructive", onPress: () => deleteCategory(id) },
+    ]);
   };
 
   if (categories.length === 0 && !isAdding) {
     return (
-      <View className="flex-1 bg-white dark:bg-gray-950">
-        <EmptyState
-          icon="📂"
-          title="No categories"
-          description="Create categories to organize your tasks"
-        />
-        <View className="p-4">
+      <View style={styles.container}>
+        <EmptyState icon="📂" title="No categories" description="Create categories to organize your tasks" />
+        <View style={{ padding: 16 }}>
           <Button title="Add Category" onPress={() => setIsAdding(true)} />
         </View>
       </View>
@@ -82,41 +44,22 @@ export default function CategoriesScreen() {
   }
 
   return (
-    <View className="flex-1 bg-white dark:bg-gray-950">
+    <View style={styles.container}>
       {isAdding && (
-        <View className="p-4 border-b border-gray-100 dark:border-gray-800">
-          <TextInput
-            value={newName}
-            onChangeText={setNewName}
-            placeholder="Category name"
-            className="bg-gray-100 dark:bg-gray-800 rounded-xl px-4 py-3 text-gray-900 dark:text-white mb-3"
-            placeholderTextColor="#9ca3af"
-            autoFocus
-          />
-          <View className="flex-row mb-3">
+        <View style={styles.addForm}>
+          <TextInput value={newName} onChangeText={setNewName} placeholder="Category name" style={styles.input} placeholderTextColor="#9ca3af" autoFocus />
+          <View style={styles.colorRow}>
             {COLORS.map((color) => (
-              <Pressable
-                key={color}
-                onPress={() => setSelectedColor(color)}
-                className={cn(
-                  "w-8 h-8 rounded-full mr-2",
-                  selectedColor === color && "ring-2 ring-primary-600 ring-offset-2"
-                )}
-                style={{ backgroundColor: color }}
-              />
+              <Pressable key={color} onPress={() => setSelectedColor(color)} style={[styles.colorDot, { backgroundColor: color }, selectedColor === color && styles.colorDotSelected]} />
             ))}
           </View>
-          <View className="flex-row">
-            <Button
-              title="Cancel"
-              variant="secondary"
-              onPress={() => {
-                setIsAdding(false);
-                setNewName("");
-              }}
-              className="flex-1 mr-2"
-            />
-            <Button title="Add" onPress={handleAdd} className="flex-1" />
+          <View style={styles.formActions}>
+            <View style={{ flex: 1, marginRight: 8 }}>
+              <Button title="Cancel" variant="secondary" onPress={() => { setIsAdding(false); setNewName(""); }} />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Button title="Add" onPress={handleAdd} />
+            </View>
           </View>
         </View>
       )}
@@ -128,35 +71,36 @@ export default function CategoriesScreen() {
         renderItem={({ item }) => {
           const taskCount = tasks.filter((t) => t.categoryId === item.id).length;
           return (
-            <View className="flex-row items-center bg-white dark:bg-gray-900 rounded-xl p-4 mb-3 border border-gray-100 dark:border-gray-800">
-              <View
-                className="w-4 h-4 rounded-full mr-3"
-                style={{ backgroundColor: item.color }}
-              />
-              <View className="flex-1">
-                <Text className="font-semibold text-gray-900 dark:text-white">
-                  {item.name}
-                </Text>
-                <Text className="text-sm text-gray-500 dark:text-gray-400">
-                  {taskCount} {taskCount === 1 ? "task" : "tasks"}
-                </Text>
+            <View style={styles.categoryItem}>
+              <View style={[styles.catColorDot, { backgroundColor: item.color }]} />
+              <View style={styles.catInfo}>
+                <Text style={styles.catName}>{item.name}</Text>
+                <Text style={styles.catCount}>{taskCount} {taskCount === 1 ? "task" : "tasks"}</Text>
               </View>
               <Pressable onPress={() => handleDelete(item.id, item.name)}>
-                <Text className="text-red-500 text-sm">Delete</Text>
+                <Text style={styles.deleteBtn}>Delete</Text>
               </Pressable>
             </View>
           );
         }}
-        ListFooterComponent={
-          !isAdding ? (
-            <Button
-              title="Add Category"
-              variant="secondary"
-              onPress={() => setIsAdding(true)}
-            />
-          ) : null
-        }
+        ListFooterComponent={!isAdding ? <Button title="Add Category" variant="secondary" onPress={() => setIsAdding(true)} /> : null}
       />
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: "#ffffff" },
+  addForm: { padding: 16, borderBottomWidth: 1, borderBottomColor: "#f3f4f6" },
+  input: { backgroundColor: "#f3f4f6", borderRadius: 12, paddingHorizontal: 16, paddingVertical: 12, fontSize: 16, color: "#111827", marginBottom: 12 },
+  colorRow: { flexDirection: "row", marginBottom: 12 },
+  colorDot: { width: 32, height: 32, borderRadius: 16, marginRight: 8 },
+  colorDotSelected: { borderWidth: 3, borderColor: "#2563eb" },
+  formActions: { flexDirection: "row" },
+  categoryItem: { flexDirection: "row", alignItems: "center", backgroundColor: "#ffffff", borderRadius: 12, padding: 16, marginBottom: 12, borderWidth: 1, borderColor: "#f3f4f6" },
+  catColorDot: { width: 16, height: 16, borderRadius: 8, marginRight: 12 },
+  catInfo: { flex: 1 },
+  catName: { fontSize: 16, fontWeight: "600", color: "#111827" },
+  catCount: { fontSize: 14, color: "#6b7280" },
+  deleteBtn: { color: "#ef4444", fontSize: 14 },
+});

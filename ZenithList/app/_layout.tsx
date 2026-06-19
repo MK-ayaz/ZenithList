@@ -1,11 +1,9 @@
 import { useEffect } from "react";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { useColorScheme, View } from "react-native";
-import * as Notifications from "expo-notifications";
+import { useColorScheme } from "react-native";
 import { useSettingsStore } from "../src/stores/settingsStore";
 import { initializeNotifications, setupNotificationResponseHandler } from "../src/services/notifications";
-import "../global.css";
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();

@@ -1,7 +1,6 @@
 import React from "react";
-import { Pressable, Text, ActivityIndicator } from "react-native";
+import { Pressable, Text, ActivityIndicator, StyleSheet } from "react-native";
 import Animated, { useSharedValue, useAnimatedStyle, withSpring } from "react-native-reanimated";
-import { cn } from "../utils/cn";
 
 interface ButtonProps {
   title: string;
@@ -10,7 +9,6 @@ interface ButtonProps {
   size?: "sm" | "md" | "lg";
   disabled?: boolean;
   loading?: boolean;
-  className?: string;
 }
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
@@ -22,7 +20,6 @@ export function Button({
   size = "md",
   disabled = false,
   loading = false,
-  className,
 }: ButtonProps) {
   const scale = useSharedValue(1);
 
@@ -38,51 +35,55 @@ export function Button({
     scale.value = withSpring(1);
   };
 
-  const baseClasses = "rounded-xl items-center justify-center flex-row";
-  const sizeClasses = {
-    sm: "px-4 py-2",
-    md: "px-6 py-3",
-    lg: "px-8 py-4",
-  };
-  const variantClasses = {
-    primary: "bg-primary-600",
-    secondary: "bg-gray-100 dark:bg-gray-800",
-    outline: "border border-gray-300 dark:border-gray-600",
-    danger: "bg-red-500",
-  };
-
   return (
     <AnimatedPressable
-      style={[animatedStyle]}
+      style={[
+        styles.base,
+        styles[`size_${size}`],
+        styles[`variant_${variant}`],
+        disabled && styles.disabled,
+        animatedStyle,
+      ]}
       onPress={onPress}
       onPressIn={handlePressIn}
       onPressOut={handlePressOut}
       disabled={disabled || loading}
-      className={cn(
-        baseClasses,
-        sizeClasses[size],
-        variantClasses[variant],
-        disabled && "opacity-50",
-        className
-      )}
     >
       {loading && (
-        <ActivityIndicator size="small" color="white" className="mr-2" />
+        <ActivityIndicator size="small" color="white" style={{ marginRight: 8 }} />
       )}
       <Text
-        className={cn(
-          "font-semibold",
-          size === "sm" && "text-sm",
-          size === "md" && "text-base",
-          size === "lg" && "text-lg",
-          variant === "primary" && "text-white",
-          variant === "secondary" && "text-gray-900 dark:text-white",
-          variant === "outline" && "text-gray-900 dark:text-white",
-          variant === "danger" && "text-white"
-        )}
+        style={[
+          styles.text,
+          styles[`text_${size}`],
+          variant === "primary" && styles.textWhite,
+          variant === "danger" && styles.textWhite,
+        ]}
       >
         {title}
       </Text>
     </AnimatedPressable>
   );
 }
+
+const styles = StyleSheet.create({
+  base: {
+    borderRadius: 12,
+    alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "row",
+  },
+  size_sm: { paddingHorizontal: 16, paddingVertical: 8 },
+  size_md: { paddingHorizontal: 24, paddingVertical: 12 },
+  size_lg: { paddingHorizontal: 32, paddingVertical: 16 },
+  variant_primary: { backgroundColor: "#2563eb" },
+  variant_secondary: { backgroundColor: "#f3f4f6" },
+  variant_outline: { backgroundColor: "transparent", borderWidth: 1, borderColor: "#d1d5db" },
+  variant_danger: { backgroundColor: "#ef4444" },
+  disabled: { opacity: 0.5 },
+  text: { fontWeight: "600", color: "#111827" },
+  text_sm: { fontSize: 14 },
+  text_md: { fontSize: 16 },
+  text_lg: { fontSize: 18 },
+  textWhite: { color: "#ffffff" },
+});

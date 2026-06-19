@@ -1,4 +1,4 @@
-import { View, Text, ScrollView } from "react-native";
+import { View, Text, ScrollView, StyleSheet } from "react-native";
 import { useTaskStore } from "../src/stores/taskStore";
 import { useCategoryStore } from "../src/stores/categoryStore";
 
@@ -11,11 +11,7 @@ export default function StatsScreen() {
   const pendingTasks = totalTasks - completedTasks;
   const completionRate = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
 
-  const today = new Date().toISOString().split("T")[0];
-  const tasksCreatedToday = tasks.filter((t) => t.createdAt.startsWith(today)).length;
-  const tasksCompletedToday = tasks.filter(
-    (t) => t.completedAt?.startsWith(today)
-  ).length;
+  const tasksCompletedToday = tasks.filter((t) => t.completedAt?.startsWith(new Date().toISOString().split("T")[0])).length;
 
   const highPriority = tasks.filter((t) => t.priority === "high" && !t.completedAt).length;
   const mediumPriority = tasks.filter((t) => t.priority === "medium" && !t.completedAt).length;
@@ -29,97 +25,63 @@ export default function StatsScreen() {
   }));
 
   return (
-    <ScrollView className="flex-1 bg-white dark:bg-gray-950">
-      <View className="p-4">
-        <View className="bg-primary-50 dark:bg-primary-900/20 rounded-2xl p-6 mb-4">
-          <Text className="text-4xl font-bold text-primary-600 mb-1">
-            {completionRate}%
-          </Text>
-          <Text className="text-primary-700 dark:text-primary-300">
-            Completion Rate
-          </Text>
+    <ScrollView style={styles.container}>
+      <View style={styles.content}>
+        <View style={styles.rateCard}>
+          <Text style={styles.rateNumber}>{completionRate}%</Text>
+          <Text style={styles.rateLabel}>Completion Rate</Text>
         </View>
 
-        <View className="flex-row mb-4">
-          <View className="flex-1 bg-gray-50 dark:bg-gray-800 rounded-xl p-4 mr-2">
-            <Text className="text-2xl font-bold text-gray-900 dark:text-white">
-              {totalTasks}
-            </Text>
-            <Text className="text-sm text-gray-500 dark:text-gray-400">
-              Total Tasks
-            </Text>
+        <View style={styles.statsRow}>
+          <View style={styles.statCard}>
+            <Text style={[styles.statNumber, { color: "#111827" }]}>{totalTasks}</Text>
+            <Text style={styles.statLabel}>Total Tasks</Text>
           </View>
-          <View className="flex-1 bg-gray-50 dark:bg-gray-800 rounded-xl p-4 ml-2">
-            <Text className="text-2xl font-bold text-green-600">
-              {completedTasks}
-            </Text>
-            <Text className="text-sm text-gray-500 dark:text-gray-400">
-              Completed
-            </Text>
+          <View style={styles.statCard}>
+            <Text style={[styles.statNumber, { color: "#22c55e" }]}>{completedTasks}</Text>
+            <Text style={styles.statLabel}>Completed</Text>
           </View>
         </View>
 
-        <View className="flex-row mb-4">
-          <View className="flex-1 bg-gray-50 dark:bg-gray-800 rounded-xl p-4 mr-2">
-            <Text className="text-2xl font-bold text-amber-600">
-              {pendingTasks}
-            </Text>
-            <Text className="text-sm text-gray-500 dark:text-gray-400">
-              Pending
-            </Text>
+        <View style={styles.statsRow}>
+          <View style={styles.statCard}>
+            <Text style={[styles.statNumber, { color: "#f59e0b" }]}>{pendingTasks}</Text>
+            <Text style={styles.statLabel}>Pending</Text>
           </View>
-          <View className="flex-1 bg-gray-50 dark:bg-gray-800 rounded-xl p-4 ml-2">
-            <Text className="text-2xl font-bold text-blue-600">
-              {tasksCompletedToday}
-            </Text>
-            <Text className="text-sm text-gray-500 dark:text-gray-400">
-              Done Today
-            </Text>
+          <View style={styles.statCard}>
+            <Text style={[styles.statNumber, { color: "#3b82f6" }]}>{tasksCompletedToday}</Text>
+            <Text style={styles.statLabel}>Done Today</Text>
           </View>
         </View>
 
-        <Text className="text-lg font-semibold text-gray-900 dark:text-white mb-3">
-          Priority Breakdown
-        </Text>
-        <View className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 mb-4">
-          <View className="flex-row items-center mb-2">
-            <View className="w-3 h-3 rounded-full bg-red-500 mr-2" />
-            <Text className="text-gray-700 dark:text-gray-300 flex-1">High</Text>
-            <Text className="font-semibold text-gray-900 dark:text-white">{highPriority}</Text>
+        <Text style={styles.sectionTitle}>Priority Breakdown</Text>
+        <View style={styles.breakdownCard}>
+          <View style={styles.breakdownRow}>
+            <View style={[styles.breakdownDot, { backgroundColor: "#ef4444" }]} />
+            <Text style={styles.breakdownLabel}>High</Text>
+            <Text style={styles.breakdownValue}>{highPriority}</Text>
           </View>
-          <View className="flex-row items-center mb-2">
-            <View className="w-3 h-3 rounded-full bg-amber-500 mr-2" />
-            <Text className="text-gray-700 dark:text-gray-300 flex-1">Medium</Text>
-            <Text className="font-semibold text-gray-900 dark:text-white">{mediumPriority}</Text>
+          <View style={styles.breakdownRow}>
+            <View style={[styles.breakdownDot, { backgroundColor: "#f59e0b" }]} />
+            <Text style={styles.breakdownLabel}>Medium</Text>
+            <Text style={styles.breakdownValue}>{mediumPriority}</Text>
           </View>
-          <View className="flex-row items-center">
-            <View className="w-3 h-3 rounded-full bg-blue-500 mr-2" />
-            <Text className="text-gray-700 dark:text-gray-300 flex-1">Low</Text>
-            <Text className="font-semibold text-gray-900 dark:text-white">{lowPriority}</Text>
+          <View style={styles.breakdownRow}>
+            <View style={[styles.breakdownDot, { backgroundColor: "#3b82f6" }]} />
+            <Text style={styles.breakdownLabel}>Low</Text>
+            <Text style={styles.breakdownValue}>{lowPriority}</Text>
           </View>
         </View>
 
         {categoryStats.length > 0 && (
           <>
-            <Text className="text-lg font-semibold text-gray-900 dark:text-white mb-3">
-              By Category
-            </Text>
-            <View className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
+            <Text style={styles.sectionTitle}>By Category</Text>
+            <View style={styles.breakdownCard}>
               {categoryStats.map((stat) => (
-                <View
-                  key={stat.name}
-                  className="flex-row items-center mb-2 last:mb-0"
-                >
-                  <View
-                    className="w-3 h-3 rounded-full mr-2"
-                    style={{ backgroundColor: stat.color }}
-                  />
-                  <Text className="text-gray-700 dark:text-gray-300 flex-1">
-                    {stat.name}
-                  </Text>
-                  <Text className="text-gray-500 dark:text-gray-400 mr-2">
-                    {stat.completed}/{stat.total}
-                  </Text>
+                <View key={stat.name} style={styles.breakdownRow}>
+                  <View style={[styles.breakdownDot, { backgroundColor: stat.color }]} />
+                  <Text style={styles.breakdownLabel}>{stat.name}</Text>
+                  <Text style={styles.breakdownValue}>{stat.completed}/{stat.total}</Text>
                 </View>
               ))}
             </View>
@@ -129,3 +91,21 @@ export default function StatsScreen() {
     </ScrollView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: "#ffffff" },
+  content: { padding: 16 },
+  rateCard: { backgroundColor: "#eff6ff", borderRadius: 16, padding: 24, marginBottom: 16, alignItems: "center" },
+  rateNumber: { fontSize: 40, fontWeight: "bold", color: "#2563eb", marginBottom: 4 },
+  rateLabel: { fontSize: 15, color: "#1e40af" },
+  statsRow: { flexDirection: "row", marginBottom: 16 },
+  statCard: { flex: 1, backgroundColor: "#f9fafb", borderRadius: 12, padding: 16, marginHorizontal: 4 },
+  statNumber: { fontSize: 24, fontWeight: "bold" },
+  statLabel: { fontSize: 14, color: "#6b7280" },
+  sectionTitle: { fontSize: 18, fontWeight: "600", color: "#111827", marginBottom: 12, marginTop: 8 },
+  breakdownCard: { backgroundColor: "#f9fafb", borderRadius: 12, padding: 16 },
+  breakdownRow: { flexDirection: "row", alignItems: "center", marginBottom: 8 },
+  breakdownDot: { width: 12, height: 12, borderRadius: 6, marginRight: 8 },
+  breakdownLabel: { fontSize: 15, color: "#374151", flex: 1 },
+  breakdownValue: { fontSize: 15, fontWeight: "600", color: "#111827" },
+});

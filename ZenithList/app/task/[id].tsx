@@ -7,13 +7,13 @@ import {
   Platform,
   Alert,
   KeyboardAvoidingView,
+  StyleSheet,
 } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useTaskStore } from "../../src/stores/taskStore";
 import { useCategoryStore } from "../../src/stores/categoryStore";
 import { Input } from "../../src/components/Input";
 import { Button } from "../../src/components/Button";
-import { cn } from "../../src/utils/cn";
 import { Priority } from "../../src/types";
 
 const PRIORITIES: Priority[] = ["high", "medium", "low", "none"];
@@ -38,13 +38,9 @@ export default function EditTaskScreen() {
   const [title, setTitle] = useState(task?.title ?? "");
   const [description, setDescription] = useState(task?.description ?? "");
   const [priority, setPriority] = useState<Priority>(task?.priority ?? "none");
-  const [categoryId, setCategoryId] = useState<string | null>(
-    task?.categoryId ?? null
-  );
+  const [categoryId, setCategoryId] = useState<string | null>(task?.categoryId ?? null);
   const [isRecurring, setIsRecurring] = useState(task?.isRecurring ?? false);
-  const [recurrenceType, setRecurrenceType] = useState<string | null>(
-    task?.recurrenceType ?? null
-  );
+  const [recurrenceType, setRecurrenceType] = useState<string | null>(task?.recurrenceType ?? null);
 
   useEffect(() => {
     if (task) {
@@ -59,8 +55,8 @@ export default function EditTaskScreen() {
 
   if (!task) {
     return (
-      <View className="flex-1 items-center justify-center bg-white dark:bg-gray-950">
-        <Text className="text-gray-500 text-lg">Task not found</Text>
+      <View style={styles.notFound}>
+        <Text style={styles.notFoundText}>Task not found</Text>
       </View>
     );
   }
@@ -70,7 +66,6 @@ export default function EditTaskScreen() {
       Alert.alert("Error", "Please enter a task title");
       return;
     }
-
     updateTask(id!, {
       title: title.trim(),
       description: description.trim(),
@@ -79,7 +74,6 @@ export default function EditTaskScreen() {
       isRecurring,
       recurrenceType: recurrenceType as any,
     });
-
     router.back();
   };
 
@@ -89,10 +83,7 @@ export default function EditTaskScreen() {
       {
         text: "Delete",
         style: "destructive",
-        onPress: () => {
-          deleteTask(id!);
-          router.back();
-        },
+        onPress: () => { deleteTask(id!); router.back(); },
       },
     ]);
   };
@@ -100,133 +91,67 @@ export default function EditTaskScreen() {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
-      className="flex-1"
+      style={{ flex: 1 }}
     >
-      <ScrollView className="flex-1 bg-white dark:bg-gray-950">
-        <View className="p-4">
-          <Input
-            label="Task Title"
-            value={title}
-            onChangeText={setTitle}
-            placeholder="What needs to be done?"
-          />
+      <ScrollView style={styles.container}>
+        <View style={styles.content}>
+          <Input label="Task Title" value={title} onChangeText={setTitle} placeholder="What needs to be done?" />
+          <Input label="Description (optional)" value={description} onChangeText={setDescription} placeholder="Add some details..." multiline numberOfLines={3} />
 
-          <Input
-            label="Description (optional)"
-            value={description}
-            onChangeText={setDescription}
-            placeholder="Add some details..."
-            multiline
-            numberOfLines={3}
-          />
-
-          <Text className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            Priority
-          </Text>
-          <View className="flex-row mb-6">
+          <Text style={styles.sectionLabel}>Priority</Text>
+          <View style={styles.optionRow}>
             {PRIORITIES.map((p) => (
-              <Pressable
-                key={p}
-                onPress={() => setPriority(p)}
-                className={cn(
-                  "px-4 py-2 rounded-lg mr-2",
-                  priority === p ? "bg-primary-600" : "bg-gray-100 dark:bg-gray-800"
-                )}
-              >
-                <Text
-                  className={cn(
-                    "font-medium capitalize",
-                    priority === p
-                      ? "text-white"
-                      : "text-gray-600 dark:text-gray-400"
-                  )}
-                >
-                  {p}
-                </Text>
+              <Pressable key={p} onPress={() => setPriority(p)} style={[styles.optionBtn, priority === p && styles.optionBtnActive]}>
+                <Text style={[styles.optionText, priority === p && styles.optionTextActive]}>{p}</Text>
               </Pressable>
             ))}
           </View>
 
           {categories.length > 0 && (
             <>
-              <Text className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Category
-              </Text>
-              <View className="flex-row flex-wrap mb-6">
+              <Text style={styles.sectionLabel}>Category</Text>
+              <View style={styles.optionWrap}>
                 {categories.map((cat) => (
-                  <Pressable
-                    key={cat.id}
-                    onPress={() =>
-                      setCategoryId(categoryId === cat.id ? null : cat.id)
-                    }
-                    className={cn(
-                      "flex-row items-center px-3 py-2 rounded-lg mr-2 mb-2",
-                      categoryId === cat.id
-                        ? "bg-primary-600"
-                        : "bg-gray-100 dark:bg-gray-800"
-                    )}
-                  >
-                    <View
-                      className="w-2 h-2 rounded-full mr-2"
-                      style={{ backgroundColor: cat.color }}
-                    />
-                    <Text
-                      className={cn(
-                        "font-medium",
-                        categoryId === cat.id
-                          ? "text-white"
-                          : "text-gray-600 dark:text-gray-400"
-                      )}
-                    >
-                      {cat.name}
-                    </Text>
+                  <Pressable key={cat.id} onPress={() => setCategoryId(categoryId === cat.id ? null : cat.id)} style={[styles.categoryBtn, categoryId === cat.id && styles.categoryBtnActive]}>
+                    <View style={[styles.catDot, { backgroundColor: cat.color }]} />
+                    <Text style={[styles.optionText, categoryId === cat.id && styles.optionTextActive]}>{cat.name}</Text>
                   </Pressable>
                 ))}
               </View>
             </>
           )}
 
-          <Text className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            Recurrence
-          </Text>
-          <View className="flex-row flex-wrap mb-6">
+          <Text style={styles.sectionLabel}>Recurrence</Text>
+          <View style={styles.optionWrap}>
             {RECURRENCE_OPTIONS.map((opt) => (
-              <Pressable
-                key={opt.label}
-                onPress={() => {
-                  setRecurrenceType(opt.value);
-                  setIsRecurring(!!opt.value);
-                }}
-                className={cn(
-                  "px-4 py-2 rounded-lg mr-2 mb-2",
-                  recurrenceType === opt.value
-                    ? "bg-primary-600"
-                    : "bg-gray-100 dark:bg-gray-800"
-                )}
-              >
-                <Text
-                  className={cn(
-                    "font-medium",
-                    recurrenceType === opt.value
-                      ? "text-white"
-                      : "text-gray-600 dark:text-gray-400"
-                  )}
-                >
-                  {opt.label}
-                </Text>
+              <Pressable key={opt.label} onPress={() => { setRecurrenceType(opt.value); setIsRecurring(!!opt.value); }} style={[styles.optionBtn, recurrenceType === opt.value && styles.optionBtnActive]}>
+                <Text style={[styles.optionText, recurrenceType === opt.value && styles.optionTextActive]}>{opt.label}</Text>
               </Pressable>
             ))}
           </View>
 
-          <Button title="Save Changes" onPress={handleSave} className="mb-3" />
-          <Button
-            title="Delete Task"
-            variant="danger"
-            onPress={handleDelete}
-            className="mb-4"
-          />
+          <Button title="Save Changes" onPress={handleSave} />
+          <View style={{ height: 12 }} />
+          <Button title="Delete Task" variant="danger" onPress={handleDelete} />
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: "#ffffff" },
+  content: { padding: 16 },
+  notFound: { flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: "#ffffff" },
+  notFoundText: { fontSize: 18, color: "#6b7280" },
+  sectionLabel: { fontSize: 14, fontWeight: "500", color: "#374151", marginBottom: 8 },
+  optionRow: { flexDirection: "row", marginBottom: 24 },
+  optionWrap: { flexDirection: "row", flexWrap: "wrap", marginBottom: 24 },
+  optionBtn: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 8, marginRight: 8, marginBottom: 8, backgroundColor: "#f3f4f6" },
+  optionBtnActive: { backgroundColor: "#2563eb" },
+  optionText: { fontWeight: "500", color: "#6b7280" },
+  optionTextActive: { color: "#ffffff" },
+  categoryBtn: { flexDirection: "row", alignItems: "center", paddingHorizontal: 12, paddingVertical: 8, borderRadius: 8, marginRight: 8, marginBottom: 8, backgroundColor: "#f3f4f6" },
+  categoryBtnActive: { backgroundColor: "#2563eb" },
+  catDot: { width: 8, height: 8, borderRadius: 4, marginRight: 8 },
+});

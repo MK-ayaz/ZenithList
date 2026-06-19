@@ -1,24 +1,25 @@
 import React from "react";
-import { View, Text } from "react-native";
-import { cn } from "../utils/cn";
+import { View, Text, StyleSheet } from "react-native";
 
 interface EmptyStateProps {
   icon: string;
   title: string;
   description: string;
-  className?: string;
 }
 
-export function EmptyState({ icon, title, description, className }: EmptyStateProps) {
+export function EmptyState({ icon, title, description }: EmptyStateProps) {
   return (
-    <View className={cn("flex-1 items-center justify-center px-8 py-12", className)}>
-      <Text className="text-6xl mb-4">{icon}</Text>
-      <Text className="text-xl font-semibold text-gray-900 dark:text-white text-center mb-2">
-        {title}
-      </Text>
-      <Text className="text-gray-500 dark:text-gray-400 text-center">
-        {description}
-      </Text>
+    <View style={styles.container}>
+      <Text style={styles.icon}>{icon}</Text>
+      <Text style={styles.title}>{title}</Text>
+      <Text style={styles.description}>{description}</Text>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: { flex: 1, alignItems: "center", justifyContent: "center", paddingHorizontal: 32, paddingVertical: 48 },
+  icon: { fontSize: 48, marginBottom: 16 },
+  title: { fontSize: 20, fontWeight: "600", color: "#111827", textAlign: "center", marginBottom: 8 },
+  description: { fontSize: 15, color: "#6b7280", textAlign: "center" },
+});

@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, FlatList } from "react-native";
+import { FlatList } from "react-native";
 import { TaskCard } from "./TaskCard";
 import { EmptyState } from "./EmptyState";
 import { Task } from "../types";
