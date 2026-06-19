@@ -1,12 +1,9 @@
 import React, { useEffect } from 'react';
 import { Stack } from 'expo-router';
 import { View } from 'react-native';
-import { styled } from 'nativewind';
 import { initDb } from '../services/db';
 import { useStore } from '../store/useStore';
 import { ThemeProvider } from './theme-provider';
-
-const StyledView = styled(View);
 
 export default function RootLayout() {
   const { theme } = useStore();
@@ -17,7 +14,7 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider theme={theme}>
-      <StyledView className="flex-1 bg-slate-50 dark:bg-black">
+      <View className="flex-1 bg-slate-50 dark:bg-black">
         <Stack
           screenOptions={{
             headerStyle: { backgroundColor: 'transparent' },
@@ -31,7 +28,7 @@ export default function RootLayout() {
           <Stack.Screen name="dashboard" options={{ title: 'Insights' }} />
           <Stack.Screen name="settings" options={{ title: 'Settings' }} />
         </Stack>
-      </StyledView>
+      </View>
     </ThemeProvider>
   );
 }

@@ -6,10 +6,10 @@ import { dbService } from '../../services/db';
 import { TaskItem } from '../../components/TaskItem';
 import { TaskModal } from '../../components/TaskModal';
 import { Typography, Button } from '../../components/UI';
-import { Task } from '../../types';
+import { Todo } from '../../types/todo';
 
 export default function InboxScreen() {
-  const [tasks, setTasks] = useState<Task[]>([]);
+  const [tasks, setTasks] = useState<Todo[]>([]);
   const [loading, setLoading] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
   const [search, setSearch] = useState('');
@@ -20,7 +20,7 @@ export default function InboxScreen() {
 
   async function loadTasks() {
     setLoading(true);
-    const data = await dbService.getTasks('all', search);
+    const data = await dbService.getTasks();
     setTasks(data);
     setLoading(false);
   }
@@ -41,7 +41,6 @@ export default function InboxScreen() {
     await dbService.addTask({
       ...taskData,
       createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
     });
     setModalVisible(false);
     await loadTasks();
@@ -81,12 +80,11 @@ export default function InboxScreen() {
         data={tasks}
         renderItem={({ item }) => (
           <TaskItem 
-            task={item as Task} 
+            task={item as any} 
             onToggle={handleToggle} 
             onDelete={handleDelete} 
           />
         )}
-        estimatedItemSize={80}
         ListEmptyComponent={
           <View className="items-center mt-20">
             <Typography variant="body" className="text-gray-400">No tasks found. Relax!</Typography>

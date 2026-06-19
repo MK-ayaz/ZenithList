@@ -6,6 +6,8 @@ Notifications.setNotificationHandler({
     shouldShowAlert: true,
     shouldPlaySound: true,
     shouldSetBadge: false,
+    shouldShowBanner: true,
+    shouldShowList: true,
   }),
 });
 
@@ -28,6 +30,7 @@ export const notificationService = {
       },
       trigger: {
         date: date,
+        type: 'date' as any,
       },
     });
   },

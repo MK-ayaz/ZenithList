@@ -1,18 +1,17 @@
 import React from 'react';
 import { View } from 'react-native';
-import { styled } from 'nativewind';
+
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
 import { useStore } from '../store/useStore';
 import { Card } from '../components/ui/Card';
 
-const StyledView = styled(View);
 
 export default function Page() {
   const { theme, setTheme, notificationsEnabled, toggleNotifications } = useStore();
 
   return (
-    <StyledView className="flex-1 px-6 pt-4">
+    <View className="flex-1 px-6 pt-4">
       <Card className="mb-6">
         <View className="flex-row justify-between items-center mb-4">
           <View>
@@ -40,6 +39,6 @@ export default function Page() {
           />
         </View>
       </Card>
-    </StyledView>
+    </View>
   );
 }

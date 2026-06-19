@@ -1,10 +1,7 @@
 import React from 'react';
 import { TouchableOpacity, Text, ActivityIndicator } from 'react-native';
-import { styled } from 'nativewind';
-import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 
-const StyledTouchableOpacity = styled(TouchableOpacity);
-const StyledText = styled(Text);
+
 
 interface ButtonProps {
   title: string;
@@ -36,7 +33,7 @@ export const Button: React.FC<ButtonProps> = ({
   };
 
   return (
-    <StyledTouchableOpacity
+    <TouchableOpacity
       onPress={onPress}
       disabled={disabled || isLoading}
       className={`px-4 py-3 rounded-2xl flex-row justify-center items-center ${variants[variant]} ${className}`}
@@ -45,10 +42,10 @@ export const Button: React.FC<ButtonProps> = ({
       {isLoading ? (
         <ActivityIndicator color="white" />
       ) : (
-        <StyledText className={`font-semibold text-center ${textVariants[variant]}`}>
+        <Text className={`font-semibold text-center ${textVariants[variant]}`}>
           {title}
-        </StyledText>
+        </Text>
       )}
-    </StyledTouchableOpacity>
+    </TouchableOpacity>
   );
 };

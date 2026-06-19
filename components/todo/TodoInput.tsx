@@ -1,15 +1,13 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Pressable } from 'react-native';
-import { styled } from 'nativewind';
+import { View, TextInput, Pressable } from 'react-native';
+
 import { Plus } from 'lucide-react-native';
 import { parseNaturalLanguageDate, extractTodoTitle } from '../../utils/nlp';
 import { todoService } from '../../services/db';
 import { notificationService } from '../../services/notifications';
 import { useStore } from '../../store/useStore';
 
-const StyledView = styled(View);
-const StyledText = styled(Text);
-const StyledTextInput = styled(TextInput);
+
 
 interface TodoInputProps {
   onTodoAdded: () => void;
@@ -48,8 +46,8 @@ export const TodoInput: React.FC<TodoInputProps> = ({ onTodoAdded }) => {
   };
 
   return (
-    <StyledView className="flex-row items-center p-2 bg-slate-100 dark:bg-slate-900 rounded-3xl mb-6 shadow-sm">
-      <StyledTextInput
+    <View className="flex-row items-center p-2 bg-slate-100 dark:bg-slate-900 rounded-3xl mb-6 shadow-sm">
+      <TextInput
         value={text}
         onChangeText={setText}
         placeholder="Add a task... (e.g. Buy milk tomorrow)"
@@ -59,6 +57,6 @@ export const TodoInput: React.FC<TodoInputProps> = ({ onTodoAdded }) => {
       <Pressable onPress={handleAddTodo} className="p-2 bg-primary-500 rounded-full">
         <Plus size={24} color="white" />
       </Pressable>
-    </StyledView>
+    </View>
   );
 };

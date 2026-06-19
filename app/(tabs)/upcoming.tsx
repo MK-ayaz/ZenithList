@@ -4,10 +4,10 @@ import { FlashList } from '@shopify/flash-list';
 import { dbService } from '../../services/db';
 import { TaskItem } from '../../components/TaskItem';
 import { Typography } from '../../components/UI';
-import { Task } from '../../types';
+import { Todo } from '../../types/todo';
 
 export default function UpcomingScreen() {
-  const [tasks, setTasks] = useState<Task[]>([]);
+  const [tasks, setTasks] = useState<Todo[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -16,7 +16,7 @@ export default function UpcomingScreen() {
 
   async function loadTasks() {
     setLoading(true);
-    const data = await dbService.getTasks('upcoming');
+    const data = await dbService.getTasks();
     setTasks(data);
     setLoading(false);
   }
@@ -48,12 +48,11 @@ export default function UpcomingScreen() {
         data={tasks}
         renderItem={({ item }) => (
           <TaskItem 
-            task={item as Task} 
+            task={item as any} 
             onToggle={handleToggle} 
             onDelete={handleDelete} 
           />
         )}
-        estimatedItemSize={80}
         ListEmptyComponent={
           <View className="items-center mt-20">
             <Typography variant="body" className="text-gray-400">Nothing planned yet!</Typography>

@@ -73,8 +73,16 @@ export const todoService = {
     }
   },
 
+  async updateTask(id: number, updates: Partial<import('./../types/todo').Todo>) {
+    return this.update(id, updates);
+  },
+
   async delete(id: number) {
     await db.runAsync('DELETE FROM todos WHERE id = ?', [id]);
+  },
+
+  async deleteTask(id: number) {
+    return this.delete(id);
   },
 
   async getStats() {
