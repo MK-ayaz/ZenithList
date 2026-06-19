@@ -23,13 +23,23 @@ export const todoService = {
   async create(todo: Omit<import('./../types/todo').Todo, 'id'>) {
     const result = await db.runAsync(
       'INSERT INTO todos (title, description, dueDate, priority, category, isCompleted, createdAt, reminderScheduled) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-      [todo.title, todo.description, todo.dueDate, todo.priority, todo.category, todo.isCompleted ? 1 : 0, todo.createdAt, todo.reminderScheduled ? 1 : 0]
+      [todo.title, todo.description ?? null, todo.dueDate, todo.priority, todo.category, todo.isCompleted ? 1 : 0, todo.createdAt, todo.reminderScheduled ? 1 : 0]
     );
     return result.lastInsertRowId;
   },
 
+  async addTask(todo: Omit<import('./../types/todo').Todo, 'id'>) {
+    return this.create(todo);
+  },
+// ...
+
+
   async getAll() {
     return await db.getAllAsync<import('./../types/todo').Todo>('SELECT * FROM todos ORDER BY dueDate ASC, priority DESC');
+  },
+
+  async getTasks() {
+    return this.getAll();
   },
 
   async getFiltered(filter: 'today' | 'upcoming' | 'completed') {
@@ -79,3 +89,5 @@ export const todoService = {
     };
   }
 };
+
+export const dbService = todoService;

@@ -2,6 +2,8 @@
   "extends": "expo-router/tsconfig.json",
   "compilerOptions": {
     "strict": true,
+    "jsx": "react-jsx",
+    "ignoreDeprecations": "6.0",
     "baseUrl": ".",
     "paths": {
       "@/*": [
