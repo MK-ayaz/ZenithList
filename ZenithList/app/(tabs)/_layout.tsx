@@ -3,11 +3,16 @@ import { useColorScheme, Pressable, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { useTaskStore } from "../../src/stores/taskStore";
+import { useSettingsStore } from "../../src/stores/settingsStore";
+import CustomTabBar from "../../src/components/CustomTabBar";
+import { Colors } from "../../src/utils/theme";
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
-  const isDark = colorScheme === "dark";
+  const theme = useSettingsStore((s) => s.theme);
+  const isDark = theme === "dark" || (theme === "system" && colorScheme === "dark");
   const router = useRouter();
+
   const getInboxTasks = useTaskStore((s) => s.getInboxTasks);
   const getTodayTasks = useTaskStore((s) => s.getTasksForToday);
   const getUpcomingTasks = useTaskStore((s) => s.getUpcomingTasks);
@@ -16,70 +21,56 @@ export default function TabLayout() {
   const todayCount = getTodayTasks().length;
   const upcomingCount = getUpcomingTasks().length;
 
-  const activeColor = "#6366f1";
-  const inactiveColor = isDark ? "#64748b" : "#94a3b8";
+  const colors = isDark ? Colors.dark : Colors.light;
 
   const headerRight = () => (
     <Pressable onPress={() => router.push("/stats")} style={styles.headerBtn}>
-      <Ionicons name="stats-chart" size={22} color={isDark ? "#f8fafc" : "#0f172a"} />
+      <Ionicons name="stats-chart" size={22} color={colors.text} />
     </Pressable>
   );
 
+  const tabs = [
+    { key: "today" as const, label: "Today", icon: "sunny-outline" as const, activeIcon: "sunny" as const, badge: todayCount || undefined },
+    { key: "upcoming" as const, label: "Upcoming", icon: "calendar-outline" as const, activeIcon: "calendar" as const, badge: upcomingCount || undefined },
+    { key: "inbox" as const, label: "Inbox", icon: "mail-open-outline" as const, activeIcon: "mail-open" as const, badge: inboxCount || undefined },
+    { key: "completed" as const, label: "Done", icon: "checkmark-circle-outline" as const, activeIcon: "checkmark-circle" as const },
+  ];
+
   return (
     <Tabs
+      tabBar={(props) => {
+        const route = props.state.routes[props.state.index];
+        return (
+          <CustomTabBar
+            activeTab={route.name as string as "today" | "upcoming" | "inbox" | "completed"}
+            onTabPress={(key) => {
+              const target = props.state.routes.find((r) => r.name === key);
+              if (target) props.navigation.navigate(target.name);
+            }}
+            tabs={tabs}
+            isDark={isDark}
+          />
+        );
+      }}
       screenOptions={{
-        tabBarActiveTintColor: activeColor,
-        tabBarInactiveTintColor: inactiveColor,
-        tabBarStyle: {
-          backgroundColor: isDark ? "#0f172a" : "#ffffff",
-          borderTopColor: isDark ? "#1e293b" : "#f1f5f9",
-          borderTopWidth: 1,
-          height: 88,
-          paddingTop: 8,
-          paddingBottom: 28,
+        tabBarActiveTintColor: colors.tabActive,
+        tabBarInactiveTintColor: colors.tabInactive,
+        tabBarStyle: { display: "none" },
+        headerStyle: {
+          backgroundColor: colors.background,
+          shadowColor: "transparent",
+          elevation: 0,
         },
-        tabBarLabelStyle: { fontSize: 11, fontWeight: "600" },
-        headerStyle: { backgroundColor: isDark ? "#020617" : "#ffffff", shadowColor: "transparent", elevation: 0 },
-        headerTintColor: isDark ? "#f8fafc" : "#0f172a",
+        headerTintColor: colors.text,
         headerTitleStyle: { fontWeight: "700", fontSize: 18 },
         headerShadowVisible: false,
         headerRight,
       }}
     >
-      <Tabs.Screen
-        name="today"
-        options={{
-          title: "Today",
-          tabBarIcon: ({ color, size }) => <Ionicons name="sunny" size={size} color={color} />,
-          tabBarBadge: todayCount || undefined,
-          tabBarBadgeStyle: { backgroundColor: activeColor, fontSize: 10, fontWeight: "700" },
-        }}
-      />
-      <Tabs.Screen
-        name="upcoming"
-        options={{
-          title: "Upcoming",
-          tabBarIcon: ({ color, size }) => <Ionicons name="calendar" size={size} color={color} />,
-          tabBarBadge: upcomingCount || undefined,
-          tabBarBadgeStyle: { backgroundColor: activeColor, fontSize: 10, fontWeight: "700" },
-        }}
-      />
-      <Tabs.Screen
-        name="inbox"
-        options={{
-          title: "Inbox",
-          tabBarIcon: ({ color, size }) => <Ionicons name="mail-open" size={size} color={color} />,
-          tabBarBadge: inboxCount || undefined,
-          tabBarBadgeStyle: { backgroundColor: activeColor, fontSize: 10, fontWeight: "700" },
-        }}
-      />
-      <Tabs.Screen
-        name="completed"
-        options={{
-          title: "Done",
-          tabBarIcon: ({ color, size }) => <Ionicons name="checkmark-circle" size={size} color={color} />,
-        }}
-      />
+      <Tabs.Screen name="today" options={{ title: "Today" }} />
+      <Tabs.Screen name="upcoming" options={{ title: "Upcoming" }} />
+      <Tabs.Screen name="inbox" options={{ title: "Inbox" }} />
+      <Tabs.Screen name="completed" options={{ title: "Done" }} />
     </Tabs>
   );
 }

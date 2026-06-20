@@ -3,6 +3,7 @@ import { Pressable, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import Animated, { useSharedValue, useAnimatedStyle, withSpring } from "react-native-reanimated";
 import * as Haptics from "expo-haptics";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 interface FABProps {
   iconName: keyof typeof Ionicons.glyphMap;
@@ -12,12 +13,13 @@ interface FABProps {
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 export function FAB({ iconName, onPress }: FABProps) {
+  const insets = useSafeAreaInsets();
   const scale = useSharedValue(1);
   const animStyle = useAnimatedStyle(() => ({ transform: [{ scale: scale.value }] }));
 
   return (
     <AnimatedPressable
-      style={[styles.container, animStyle]}
+      style={[styles.container, { bottom: insets.bottom + 84 }, animStyle]}
       onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); onPress(); }}
       onPressIn={() => { scale.value = withSpring(0.88); }}
       onPressOut={() => { scale.value = withSpring(1); }}
@@ -30,7 +32,6 @@ export function FAB({ iconName, onPress }: FABProps) {
 const styles = StyleSheet.create({
   container: {
     position: "absolute",
-    bottom: 28,
     right: 20,
     width: 58,
     height: 58,
