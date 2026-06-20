@@ -18,6 +18,16 @@ ZenithList is a high-performance, local-first Todo application built for the mod
 - **Productivity Insights**: Visual dashboard to track completion rates and streaks.
 - **Local Reminders**: Scheduled notifications for due tasks.
 
+## 📸 App Previews
+
+| Today View | Upcoming View | Inbox View |
+| :---: | :---: | :---: |
+| <img src="assets/App_Preview/today_view.png" width="200"> | <img src="assets/App_Preview/upcoming_view.png" width="200"> | <img src="assets/App_Preview/inbox_view.png" width="200"> |
+
+| Done View | Statistics View |
+| :---: | :---: |
+| <img src="assets/App_Preview/done_view.png" width="200"> | <img src="assets/App_Preview/statistics_view.png" width="200"> |
+
 ## 🛠 Tech Stack
 - **Framework**: Expo SDK 56 (Managed Workflow)
 - **Navigation**: Expo Router (File-based)
