@@ -1,7 +1,6 @@
 # 🚀 ZenithList
 **Reach your peak productivity with a local-first, minimalist experience.**
 
-![ZenithList Header](assets/App_Preview/today_view.png)
 
 ZenithList is a high-performance Todo application engineered for the modern mobile ecosystem. By prioritizing privacy, speed, and a streamlined user experience, it provides a focused environment for task management without the overhead of cloud synchronization.
 
