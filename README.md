@@ -4,18 +4,23 @@
 ZenithList is a high-performance, local-first Todo application built for the modern mobile ecosystem. It prioritizes privacy, speed, and a minimalist user experience.
 
 ## ✨ Features
-- **Local-First Architecture**: All data is stored on-device using SQLite for maximum privacy and offline availability.
+- **Local-First Architecture**: All data is stored on-device using AsyncStorage for maximum privacy and offline availability.
 - **Smart Views**:
   - `Today`: Focus on immediate tasks.
   - `Upcoming`: Plan for the future.
   - `Inbox`: Capture everything.
   - `Completed`: Review your wins.
-- **Natural Language Input**: Quick task entry (e.g., "Buy milk tomorrow").
+- **Task Organization**:
+  - `Categories`: Group tasks by project or life area.
+  - `Priority Levels`: High, Medium, and Low priority tagging.
+  - `Recurring Tasks`: Automatically generate the next occurrence of a task.
 - **Premium UI/UX**:
-  - Minimalist design with NativeWind v5.
+  - Minimalist design with React Native StyleSheet.
   - Fluid animations powered by Reanimated 3.
   - High-performance lists using @shopify/flash-list.
-- **Productivity Insights**: Visual dashboard to track completion rates and streaks.
+  - Dynamic Theming: Support for Light, Dark, and System modes.
+  - Haptic Feedback: Tactile responses for a native feel.
+- **Productivity Insights**: Visual dashboard to track completion rates and totals.
 - **Local Reminders**: Scheduled notifications for due tasks.
 
 ## 📸 App Previews
@@ -31,12 +36,13 @@ ZenithList is a high-performance, local-first Todo application built for the mod
 ## 🛠 Tech Stack
 - **Framework**: Expo SDK 56 (Managed Workflow)
 - **Navigation**: Expo Router (File-based)
-- **Styling**: NativeWind v5 (Tailwind CSS)
-- **State Management**: Zustand
-- **Database**: `expo-sqlite`
+- **Styling**: React Native StyleSheet
+- **State Management**: Zustand (with Persist middleware)
+- **Database**: `@react-native-async-storage/async-storage`
 - **Animations**: React Native Reanimated
 - **Icons**: Lucide React Native
 - **Date Handling**: date-fns
+- **Haptics**: `expo-haptics`
 
 ## 🚀 Getting Started
 
@@ -45,11 +51,12 @@ ZenithList is a high-performance, local-first Todo application built for the mod
 - Expo Go app on your device or an Android/iOS emulator.
 
 ### Installation
-1. **Clone the repository**:
-   ```bash
-   git clone <your-repo-url>
-   cd ZenithList
-   ```
+ 1. **Clone the repository**:
+    ```bash
+    git clone https://github.com/MK-ayaz/ZenithList.git
+    cd ZenithList
+    ```
+
 
 2. **Install dependencies**:
    ```bash
@@ -92,13 +99,12 @@ The following assets are required for a production-ready build. Place them in th
 
 ## 📂 Project Structure
 ```
+app/            # Expo Router screens and layouts
 src/
-├── app/            # Expo Router screens and layouts
-├── components/     # UI and Feature components
-│   ├── ui/         # Generic reusable components
-│   └── todo/       # Todo-specific components
-├── services/       # SQLite and Notification logic
-├── store/          # Zustand state stores
-├── types/          # TypeScript definitions
-└── utils/          # NLP parsing and date helpers
+├── components/ # UI and Feature components
+├── hooks/      # Custom React hooks
+├── services/   # Notification and utility logic
+├── stores/     # Zustand state stores
+├── types/      # TypeScript definitions
+└── utils/      # Date helpers and theme constants
 ```
