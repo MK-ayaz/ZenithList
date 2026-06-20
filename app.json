@@ -33,7 +33,8 @@
           "color": "#ffffff",
           "defaultChannel": "zenithlist-reminders"
         }
-      ]
+      ],
+      "@react-native-community/datetimepicker"
     ]
   }
 }
