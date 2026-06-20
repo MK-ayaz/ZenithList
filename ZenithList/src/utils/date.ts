@@ -1,11 +1,8 @@
 import {
   format,
-  formatDistanceToNow,
   isToday,
   isTomorrow,
-  isPast,
   isThisWeek,
-  startOfDay,
   addDays,
   addWeeks,
   addMonths,
@@ -19,33 +16,6 @@ export function formatDate(dateString: string): string {
   if (isTomorrow(date)) return "Tomorrow";
   if (isThisWeek(date)) return format(date, "EEEE");
   return format(date, "MMM d");
-}
-
-export function formatDateTime(dateString: string): string {
-  const date = parseISO(dateString);
-  return format(date, "MMM d, yyyy 'at' h:mm a");
-}
-
-export function formatRelativeTime(dateString: string): string {
-  const date = parseISO(dateString);
-  return formatDistanceToNow(date, { addSuffix: true });
-}
-
-export function isOverdue(dueDate: string | null): boolean {
-  if (!dueDate) return false;
-  return isPast(parseISO(dueDate)) && !isToday(parseISO(dueDate));
-}
-
-export function getDueDateCategory(dueDate: string | null): string {
-  if (!dueDate) return "inbox";
-  const date = parseISO(dueDate);
-  const today = startOfDay(new Date());
-
-  if (isPast(date) && !isToday(date)) return "overdue";
-  if (isToday(date)) return "today";
-  if (isTomorrow(date)) return "tomorrow";
-  if (isThisWeek(date)) return "thisWeek";
-  return "later";
 }
 
 export function calculateNextRecurrence(

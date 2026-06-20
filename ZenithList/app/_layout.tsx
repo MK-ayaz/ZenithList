@@ -5,11 +5,13 @@ import { useColorScheme } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useSettingsStore } from "../src/stores/settingsStore";
 import { initializeNotifications, setupNotificationResponseHandler } from "../src/services/notifications";
+import { Colors } from "../src/utils/theme";
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
   const theme = useSettingsStore((s) => s.theme);
   const isDark = theme === "dark" || (theme === "system" && colorScheme === "dark");
+  const colors = isDark ? Colors.dark : Colors.light;
   const router = useRouter();
   const routerRef = useRef(router);
   routerRef.current = router;
@@ -31,8 +33,12 @@ export default function RootLayout() {
       <Stack
         screenOptions={{
           headerShown: false,
-          contentStyle: { backgroundColor: isDark ? "#020617" : "#f8fafc" },
+          contentStyle: { backgroundColor: colors.background },
           animation: "slide_from_right",
+          headerStyle: { backgroundColor: colors.background },
+          headerTintColor: colors.text,
+          headerTitleStyle: { fontWeight: "700", fontSize: 17 },
+          headerShadowVisible: false,
         }}
       >
         <Stack.Screen name="(tabs)" />

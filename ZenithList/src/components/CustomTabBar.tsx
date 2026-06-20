@@ -66,6 +66,7 @@ function TabButton({
 
   const activeColor = isDark ? Colors.dark.tabActive : Colors.light.tabActive;
   const inactiveColor = isDark ? Colors.dark.tabInactive : Colors.light.tabInactive;
+  const badgeTextColor = isDark ? Colors.dark.textInverse : Colors.light.textInverse;
   const iconColor = isActive ? activeColor : inactiveColor;
 
   const iconName = isActive ? tab.activeIcon : tab.icon;
@@ -85,7 +86,7 @@ function TabButton({
         <Ionicons name={iconName} size={24} color={iconColor} />
         {tab.badge != null && tab.badge > 0 && (
           <View style={[styles.badge, { backgroundColor: activeColor }]}>
-            <Text style={styles.badgeText}>
+            <Text style={[styles.badgeText, { color: badgeTextColor }]}>
               {tab.badge > 99 ? "99+" : tab.badge}
             </Text>
           </View>
@@ -197,7 +198,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4,
   },
   badgeText: {
-    color: "#ffffff",
     fontSize: 9,
     fontWeight: "700",
     lineHeight: 14,

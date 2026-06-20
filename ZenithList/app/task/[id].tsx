@@ -11,12 +11,6 @@ import { Button } from "../../src/components/Button";
 import { Priority, RecurrenceType } from "../../src/types";
 import { Colors } from "../../src/utils/theme";
 
-const PRIORITIES: { label: string; value: Priority; color: string }[] = [
-  { label: "High", value: "high", color: "#ef4444" },
-  { label: "Medium", value: "medium", color: "#f59e0b" },
-  { label: "Low", value: "low", color: "#3b82f6" },
-  { label: "None", value: "none", color: "#94a3b8" },
-];
 const RECURRENCE: { label: string; value: RecurrenceType | null }[] = [
   { label: "None", value: null },
   { label: "Daily", value: "daily" },
@@ -36,6 +30,13 @@ export default function EditTaskScreen() {
   const theme = useSettingsStore((s) => s.theme);
   const isDark = theme === "dark" || (theme === "system" && colorScheme === "dark");
   const c = isDark ? Colors.dark : Colors.light;
+
+  const PRIORITIES: { label: string; value: Priority; color: string }[] = [
+    { label: "High", value: "high", color: c.high },
+    { label: "Medium", value: "medium", color: c.medium },
+    { label: "Low", value: "low", color: c.low },
+    { label: "None", value: "none", color: c.none },
+  ];
   const task = tasks.find((t) => t.id === id);
 
   const [title, setTitle] = useState(task?.title ?? "");
