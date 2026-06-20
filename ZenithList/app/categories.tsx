@@ -1,11 +1,13 @@
 import { useState } from "react";
-import { View, Text, FlatList, Pressable, Alert, TextInput, StyleSheet } from "react-native";
+import { View, Text, FlatList, Pressable, Alert, TextInput, useColorScheme, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import { useCategoryStore } from "../src/stores/categoryStore";
 import { useTaskStore } from "../src/stores/taskStore";
+import { useSettingsStore } from "../src/stores/settingsStore";
 import { EmptyState } from "../src/components/EmptyState";
 import { Button } from "../src/components/Button";
+import { Colors } from "../src/utils/theme";
 
 const COLORS = ["#6366f1", "#ef4444", "#f59e0b", "#22c55e", "#3b82f6", "#8b5cf6", "#ec4899", "#06b6d4", "#f97316", "#14b8a6"];
 
@@ -14,6 +16,10 @@ export default function CategoriesScreen() {
   const addCategory = useCategoryStore((s) => s.addCategory);
   const deleteCategory = useCategoryStore((s) => s.deleteCategory);
   const tasks = useTaskStore((s) => s.tasks);
+  const colorScheme = useColorScheme();
+  const theme = useSettingsStore((s) => s.theme);
+  const isDark = theme === "dark" || (theme === "system" && colorScheme === "dark");
+  const c = isDark ? Colors.dark : Colors.light;
   const [isAdding, setIsAdding] = useState(false);
   const [newName, setNewName] = useState("");
   const [selectedColor, setSelectedColor] = useState(COLORS[0]);
@@ -35,22 +41,22 @@ export default function CategoriesScreen() {
 
   if (categories.length === 0 && !isAdding) {
     return (
-      <View style={styles.container}>
-        <EmptyState iconName="folder-open" title="No categories" description="Create categories to organize your tasks" />
+      <View style={[styles.container, { backgroundColor: c.surface }]}>
+        <EmptyState iconName="folder-open" title="No categories" description="Create categories to organize your tasks" isDark={isDark} />
         <View style={{ padding: 16 }}><Button title="Add Category" iconName="add-circle" onPress={() => setIsAdding(true)} /></View>
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: c.surface }]}>
       {isAdding && (
-        <View style={styles.addForm}>
-          <TextInput value={newName} onChangeText={setNewName} placeholder="Category name" style={styles.input} placeholderTextColor="#94a3b8" autoFocus />
+        <View style={[styles.addForm, { backgroundColor: c.card, borderBottomColor: c.borderLight }]}>
+          <TextInput value={newName} onChangeText={setNewName} placeholder="Category name" style={[styles.input, { backgroundColor: c.surface, borderColor: c.border, color: c.text }]} placeholderTextColor={c.textTertiary} autoFocus />
           <View style={styles.colorGrid}>
             {COLORS.map((color) => (
               <Pressable key={color} onPress={() => { Haptics.selectionAsync(); setSelectedColor(color); }}
-                style={[styles.colorDot, { backgroundColor: color }, selectedColor === color && styles.colorDotSelected]} />
+                style={[styles.colorDot, { backgroundColor: color }, selectedColor === color && { borderWidth: 3, borderColor: c.text }]} />
             ))}
           </View>
           <View style={{ flexDirection: "row", gap: 8 }}>
@@ -67,16 +73,16 @@ export default function CategoriesScreen() {
         renderItem={({ item }) => {
           const taskCount = tasks.filter((t) => t.categoryId === item.id).length;
           return (
-            <View style={styles.categoryItem}>
+            <View style={[styles.categoryItem, { backgroundColor: c.card, borderColor: c.borderLight }]}>
               <View style={[styles.iconBg, { backgroundColor: item.color + "15" }]}>
                 <Ionicons name="folder" size={22} color={item.color} />
               </View>
               <View style={styles.catInfo}>
-                <Text style={styles.catName}>{item.name}</Text>
-                <Text style={styles.catCount}>{taskCount} task{taskCount !== 1 ? "s" : ""}</Text>
+                <Text style={[styles.catName, { color: c.text }]}>{item.name}</Text>
+                <Text style={[styles.catCount, { color: c.textSecondary }]}>{taskCount} task{taskCount !== 1 ? "s" : ""}</Text>
               </View>
               <Pressable onPress={() => handleDelete(item.id, item.name)} hitSlop={12}>
-                <Ionicons name="trash-outline" size={20} color="#ef4444" />
+                <Ionicons name="trash-outline" size={20} color={c.danger} />
               </Pressable>
             </View>
           );
@@ -88,15 +94,14 @@ export default function CategoriesScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#f8fafc" },
-  addForm: { padding: 16, backgroundColor: "#fff", borderBottomWidth: 1, borderBottomColor: "#f1f5f9" },
-  input: { backgroundColor: "#f8fafc", borderRadius: 12, borderWidth: 1, borderColor: "#e2e8f0", paddingHorizontal: 14, paddingVertical: 12, fontSize: 15, color: "#0f172a", marginBottom: 12 },
+  container: { flex: 1 },
+  addForm: { padding: 16, borderBottomWidth: 1 },
+  input: { borderRadius: 12, borderWidth: 1, paddingHorizontal: 14, paddingVertical: 12, fontSize: 15, marginBottom: 12 },
   colorGrid: { flexDirection: "row", flexWrap: "wrap", gap: 8, marginBottom: 16 },
   colorDot: { width: 32, height: 32, borderRadius: 16 },
-  colorDotSelected: { borderWidth: 3, borderColor: "#0f172a", shadowColor: "#000", shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.2, shadowRadius: 4, elevation: 3 },
-  categoryItem: { flexDirection: "row", alignItems: "center", backgroundColor: "#ffffff", borderRadius: 14, padding: 16, marginBottom: 10, borderWidth: 1, borderColor: "#f1f5f9" },
+  categoryItem: { flexDirection: "row", alignItems: "center", borderRadius: 14, padding: 16, marginBottom: 10, borderWidth: 1 },
   iconBg: { width: 44, height: 44, borderRadius: 12, alignItems: "center", justifyContent: "center", marginRight: 14 },
   catInfo: { flex: 1 },
-  catName: { fontSize: 16, fontWeight: "600", color: "#0f172a" },
-  catCount: { fontSize: 13, color: "#64748b", marginTop: 2 },
+  catName: { fontSize: 16, fontWeight: "600" },
+  catCount: { fontSize: 13, marginTop: 2 },
 });

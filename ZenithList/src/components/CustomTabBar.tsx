@@ -10,6 +10,7 @@ import { BlurView } from "expo-blur";
 import * as Haptics from "expo-haptics";
 import { Ionicons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Colors } from "../utils/theme";
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
@@ -63,8 +64,8 @@ function TabButton({
     opacity: 0.4 + labelOpacity.value * 0.6,
   }));
 
-  const activeColor = isDark ? "#818cf8" : "#6366f1";
-  const inactiveColor = isDark ? "#64748b" : "#8E8E93";
+  const activeColor = isDark ? Colors.dark.tabActive : Colors.light.tabActive;
+  const inactiveColor = isDark ? Colors.dark.tabInactive : Colors.light.tabInactive;
   const iconColor = isActive ? activeColor : inactiveColor;
 
   const iconName = isActive ? tab.activeIcon : tab.icon;
@@ -124,12 +125,8 @@ export default function CustomTabBar({
         style={[
           styles.container,
           {
-            backgroundColor: isDark
-              ? "rgba(15, 23, 42, 0.92)"
-              : "rgba(255, 255, 255, 0.92)",
-            borderTopColor: isDark
-              ? "rgba(30, 41, 59, 0.8)"
-              : "rgba(0, 0, 0, 0.06)",
+            backgroundColor: isDark ? Colors.dark.tabBarBg : Colors.light.tabBarBg,
+            borderTopColor: isDark ? Colors.dark.tabBarBorder : Colors.light.tabBarBorder,
           },
         ]}
       >

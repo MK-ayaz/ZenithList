@@ -1,5 +1,6 @@
 import { Tabs } from "expo-router";
-import { useColorScheme, Pressable, StyleSheet } from "react-native";
+import { View, Pressable, StyleSheet } from "react-native";
+import { useColorScheme } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { useTaskStore } from "../../src/stores/taskStore";
@@ -23,10 +24,21 @@ export default function TabLayout() {
 
   const colors = isDark ? Colors.dark : Colors.light;
 
-  const headerRight = () => (
-    <Pressable onPress={() => router.push("/stats")} style={styles.headerBtn}>
-      <Ionicons name="stats-chart" size={22} color={colors.text} />
+  const headerLeft = () => (
+    <Pressable onPress={() => router.push("/settings")} style={styles.headerBtnLeft} hitSlop={12}>
+      <Ionicons name="settings-outline" size={22} color={colors.text} />
     </Pressable>
+  );
+
+  const headerRight = () => (
+    <View style={styles.headerRightRow}>
+      <Pressable onPress={() => router.push("/categories")} style={styles.headerBtnRight} hitSlop={12}>
+        <Ionicons name="folder-outline" size={22} color={colors.text} />
+      </Pressable>
+      <Pressable onPress={() => router.push("/stats")} style={styles.headerBtnRight} hitSlop={12}>
+        <Ionicons name="stats-chart" size={22} color={colors.text} />
+      </Pressable>
+    </View>
   );
 
   const tabs = [
@@ -64,6 +76,7 @@ export default function TabLayout() {
         headerTintColor: colors.text,
         headerTitleStyle: { fontWeight: "700", fontSize: 18 },
         headerShadowVisible: false,
+        headerLeft,
         headerRight,
       }}
     >
@@ -76,5 +89,7 @@ export default function TabLayout() {
 }
 
 const styles = StyleSheet.create({
-  headerBtn: { marginRight: 16 },
+  headerBtnLeft: { marginLeft: 16 },
+  headerBtnRight: { marginRight: 16 },
+  headerRightRow: { flexDirection: "row", alignItems: "center" },
 });

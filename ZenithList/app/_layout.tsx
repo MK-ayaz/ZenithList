@@ -1,5 +1,5 @@
-import { useEffect } from "react";
-import { Stack } from "expo-router";
+import { useEffect, useRef } from "react";
+import { Stack, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useColorScheme } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -10,13 +10,18 @@ export default function RootLayout() {
   const colorScheme = useColorScheme();
   const theme = useSettingsStore((s) => s.theme);
   const isDark = theme === "dark" || (theme === "system" && colorScheme === "dark");
+  const router = useRouter();
+  const routerRef = useRef(router);
+  routerRef.current = router;
 
   useEffect(() => {
     initializeNotifications();
   }, []);
 
   useEffect(() => {
-    const sub = setupNotificationResponseHandler(() => {});
+    const sub = setupNotificationResponseHandler((url) => {
+      if (url) routerRef.current.push(url as any);
+    });
     return () => sub.remove();
   }, []);
 

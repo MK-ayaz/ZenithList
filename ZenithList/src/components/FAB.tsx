@@ -2,8 +2,11 @@ import React from "react";
 import { Pressable, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import Animated, { useSharedValue, useAnimatedStyle, withSpring } from "react-native-reanimated";
-import * as Haptics from "expo-haptics";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useSettingsStore } from "../stores/settingsStore";
+import { useColorScheme } from "react-native";
+import { Colors } from "../utils/theme";
+import * as Haptics from "expo-haptics";
 
 interface FABProps {
   iconName: keyof typeof Ionicons.glyphMap;
@@ -16,15 +19,19 @@ export function FAB({ iconName, onPress }: FABProps) {
   const insets = useSafeAreaInsets();
   const scale = useSharedValue(1);
   const animStyle = useAnimatedStyle(() => ({ transform: [{ scale: scale.value }] }));
+  const colorScheme = useColorScheme();
+  const theme = useSettingsStore((s) => s.theme);
+  const isDark = theme === "dark" || (theme === "system" && colorScheme === "dark");
+  const c = isDark ? Colors.dark : Colors.light;
 
   return (
     <AnimatedPressable
-      style={[styles.container, { bottom: insets.bottom + 84 }, animStyle]}
+      style={[styles.container, { bottom: insets.bottom + 84, backgroundColor: c.primary, shadowColor: c.primary }, animStyle]}
       onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); onPress(); }}
       onPressIn={() => { scale.value = withSpring(0.88); }}
       onPressOut={() => { scale.value = withSpring(1); }}
     >
-      <Ionicons name={iconName} size={26} color="#ffffff" />
+      <Ionicons name={iconName} size={26} color={c.textInverse} />
     </AnimatedPressable>
   );
 }
@@ -36,10 +43,8 @@ const styles = StyleSheet.create({
     width: 58,
     height: 58,
     borderRadius: 29,
-    backgroundColor: "#6366f1",
     alignItems: "center",
     justifyContent: "center",
-    shadowColor: "#6366f1",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.35,
     shadowRadius: 12,

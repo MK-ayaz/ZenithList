@@ -76,6 +76,6 @@ export function getPriorityColor(priority: string): string {
     case "low":
       return "#3b82f6";
     default:
-      return "#6b7280";
+      return "#94a3b8";
   }
 }

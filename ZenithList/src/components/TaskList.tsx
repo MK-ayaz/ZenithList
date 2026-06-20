@@ -5,6 +5,7 @@ import { EmptyState } from "./EmptyState";
 import { SwipeableRow } from "./SwipeableRow";
 import { Task } from "../types";
 import { useTaskStore } from "../stores/taskStore";
+import { Colors } from "../utils/theme";
 import * as Haptics from "expo-haptics";
 
 interface TaskListProps {
@@ -13,6 +14,7 @@ interface TaskListProps {
   emptyTitle?: string;
   emptyDescription?: string;
   onPressTask: (id: string) => void;
+  isDark?: boolean;
 }
 
 export function TaskList({
@@ -21,10 +23,12 @@ export function TaskList({
   emptyTitle = "No tasks",
   emptyDescription = "Create a new task to get started",
   onPressTask,
+  isDark = false,
 }: TaskListProps) {
   const completeTask = useTaskStore((s) => s.completeTask);
   const deleteTask = useTaskStore((s) => s.deleteTask);
   const [refreshing, setRefreshing] = React.useState(false);
+  const c = isDark ? Colors.dark : Colors.light;
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
@@ -33,7 +37,7 @@ export function TaskList({
   }, []);
 
   if (tasks.length === 0) {
-    return <EmptyState iconName={emptyIconName} title={emptyTitle} description={emptyDescription} />;
+    return <EmptyState iconName={emptyIconName} title={emptyTitle} description={emptyDescription} isDark={isDark} />;
   }
 
   return (
@@ -44,17 +48,19 @@ export function TaskList({
         <SwipeableRow
           onComplete={() => completeTask(item.id)}
           onDelete={() => deleteTask(item.id)}
+          isDark={isDark}
         >
           <TaskCard
             task={item}
             onPress={() => onPressTask(item.id)}
             onToggleComplete={() => completeTask(item.id)}
+            isDark={isDark}
           />
         </SwipeableRow>
       )}
       contentContainerStyle={styles.list}
       showsVerticalScrollIndicator={false}
-      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#6366f1" />}
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={c.primary} />}
     />
   );
 }

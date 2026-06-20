@@ -3,10 +3,10 @@ import { persist, createJSONStorage } from "zustand/middleware";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Task, CreateTaskInput, UpdateTaskInput } from "../types";
 import { generateId } from "../utils/id";
+import { calculateNextRecurrence } from "../utils/date";
 
 interface TaskState {
   tasks: Task[];
-  isLoading: boolean;
   addTask: (input: CreateTaskInput) => Task;
   updateTask: (id: string, input: UpdateTaskInput) => void;
   deleteTask: (id: string) => void;
@@ -24,7 +24,6 @@ export const useTaskStore = create<TaskState>()(
   persist(
     (set, get) => ({
       tasks: [],
-      isLoading: false,
 
       addTask: (input) => {
         const task: Task = {
@@ -55,17 +54,31 @@ export const useTaskStore = create<TaskState>()(
       },
 
       completeTask: (id) => {
-        set((state) => ({
-          tasks: state.tasks.map((t) =>
+        const task = get().tasks.find((t) => t.id === id);
+        const now = new Date().toISOString();
+
+        set((state) => {
+          const updated = state.tasks.map((t) =>
             t.id === id
-              ? {
-                  ...t,
-                  completedAt: new Date().toISOString(),
-                  updatedAt: new Date().toISOString(),
-                }
+              ? { ...t, completedAt: now, updatedAt: now }
               : t
-          ),
-        }));
+          );
+
+          if (task?.isRecurring && task.recurrenceType && task.dueDate) {
+            const nextDueDate = calculateNextRecurrence(task.dueDate, task.recurrenceType);
+            const nextTask: Task = {
+              ...task,
+              id: generateId(),
+              dueDate: nextDueDate,
+              completedAt: null,
+              createdAt: now,
+              updatedAt: now,
+            };
+            return { tasks: [...updated, nextTask] };
+          }
+
+          return { tasks: updated };
+        });
       },
 
       uncompleteTask: (id) => {
@@ -90,21 +103,21 @@ export const useTaskStore = create<TaskState>()(
       },
 
       getOverdueTasks: () => {
-        const now = new Date().toISOString();
+        const today = new Date().toISOString().split("T")[0];
         return get().tasks.filter(
-          (t) => !t.completedAt && t.dueDate && t.dueDate < now
+          (t) => !t.completedAt && t.dueDate && t.dueDate.split("T")[0] < today
         );
       },
 
       getUpcomingTasks: () => {
-        const now = new Date();
-        const weekFromNow = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+        const today = new Date().toISOString().split("T")[0];
+        const weekFromNow = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split("T")[0];
         return get().tasks.filter(
           (t) =>
             !t.completedAt &&
             t.dueDate &&
-            t.dueDate > now.toISOString() &&
-            t.dueDate <= weekFromNow.toISOString()
+            t.dueDate.split("T")[0] > today &&
+            t.dueDate.split("T")[0] <= weekFromNow
         );
       },
 

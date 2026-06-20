@@ -3,17 +3,20 @@ import { View, Text, StyleSheet, Pressable } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import Animated, { useSharedValue, useAnimatedStyle, withTiming, runOnJS, interpolate, Extrapolation } from "react-native-reanimated";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
+import { Colors } from "../utils/theme";
 import * as Haptics from "expo-haptics";
 
 interface SwipeableRowProps {
   children: React.ReactNode;
   onComplete: () => void;
   onDelete: () => void;
+  isDark?: boolean;
 }
 
-export function SwipeableRow({ children, onComplete, onDelete }: SwipeableRowProps) {
+export function SwipeableRow({ children, onComplete, onDelete, isDark = false }: SwipeableRowProps) {
   const translateX = useSharedValue(0);
   const maxSwipe = -120;
+  const c = isDark ? Colors.dark : Colors.light;
 
   const triggerComplete = () => { Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success); onComplete(); };
   const triggerDelete = () => { Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error); onDelete(); };
@@ -49,16 +52,16 @@ export function SwipeableRow({ children, onComplete, onDelete }: SwipeableRowPro
   return (
     <View style={styles.container}>
       <View style={styles.actionsContainer}>
-        <Animated.View style={[styles.action, styles.completeAction, completeOpacity]}>
-          <Ionicons name="checkmark-circle" size={24} color="#fff" />
-          <Text style={styles.actionText}>Done</Text>
+        <Animated.View style={[styles.action, { backgroundColor: c.success }, completeOpacity]}>
+          <Ionicons name="checkmark-circle" size={24} color={c.textInverse} />
+          <Text style={[styles.actionText, { color: c.textInverse }]}>Done</Text>
         </Animated.View>
-        <Animated.View style={[styles.action, styles.deleteAction, deleteOpacity]}>
-          <Ionicons name="trash" size={24} color="#fff" />
-          <Text style={styles.actionText}>Delete</Text>
+        <Animated.View style={[styles.action, { backgroundColor: c.danger }, deleteOpacity]}>
+          <Ionicons name="trash" size={24} color={c.textInverse} />
+          <Text style={[styles.actionText, { color: c.textInverse }]}>Delete</Text>
         </Animated.View>
       </View>
-      <Animated.View style={[styles.content, animatedStyle]}>
+      <Animated.View style={[styles.content, { backgroundColor: c.card }, animatedStyle]}>
         {children}
       </Animated.View>
     </View>
@@ -69,8 +72,6 @@ const styles = StyleSheet.create({
   container: { marginBottom: 12 },
   actionsContainer: { position: "absolute", top: 0, bottom: 0, right: 0, flexDirection: "row", borderRadius: 14, overflow: "hidden" },
   action: { width: 80, alignItems: "center", justifyContent: "center" },
-  completeAction: { backgroundColor: "#22c55e" },
-  deleteAction: { backgroundColor: "#ef4444" },
-  actionText: { color: "#fff", fontSize: 11, fontWeight: "600", marginTop: 2 },
-  content: { backgroundColor: "#fff" },
+  actionText: { fontSize: 11, fontWeight: "600", marginTop: 2 },
+  content: { borderRadius: 14 },
 });

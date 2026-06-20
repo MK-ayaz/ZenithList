@@ -1,11 +1,9 @@
 import { useState, useMemo } from "react";
 import { useTaskStore } from "../stores/taskStore";
-import { useCategoryStore } from "../stores/categoryStore";
 import { Task } from "../types";
 
 export function useFilteredTasks(view: "today" | "upcoming" | "inbox" | "completed", searchQuery?: string) {
   const tasks = useTaskStore((s) => s.tasks);
-  const categories = useCategoryStore((s) => s.categories);
 
   const filteredTasks = useMemo(() => {
     let result: Task[] = [];
@@ -23,14 +21,14 @@ export function useFilteredTasks(view: "today" | "upcoming" | "inbox" | "complet
         break;
       }
       case "upcoming": {
-        const now = new Date();
-        const weekFromNow = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+        const today = new Date().toISOString().split("T")[0];
+        const weekFromNow = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split("T")[0];
         result = tasks.filter(
           (t) =>
             !t.completedAt &&
             t.dueDate &&
-            t.dueDate > now.toISOString() &&
-            t.dueDate <= weekFromNow.toISOString()
+            t.dueDate.split("T")[0] > today &&
+            t.dueDate.split("T")[0] <= weekFromNow
         );
         break;
       }
